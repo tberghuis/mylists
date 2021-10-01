@@ -1,0 +1,17 @@
+adb -s emulator-5554 shell
+adb -s v30 shell
+
+run-as xyz.tberghuis.mylists
+cd /data/data/xyz.tberghuis.mylists/databases/
+
+sqlite3 mylists.db
+select * from mylist;
+select * from myitem;
+
+.exit
+rm *
+
+.help
+# list tables
+.tables 
+.schema mylist

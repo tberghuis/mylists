@@ -1,0 +1,6 @@
+Application for creating and editing lists.
+
+App is ad free and open source.
+Does not require any permissions.
+
+Source code: https://github.com/tberghuis/mylists
