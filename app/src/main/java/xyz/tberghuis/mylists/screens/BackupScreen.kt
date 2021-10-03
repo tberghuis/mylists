@@ -21,6 +21,7 @@ fun BackupScreen(
   ) {
 //  Text("hello backup")
 
+  // should i collect in launchedEffect
   val userDataStoreState = viewModel.userFlow.collectAsState(initial = "")
 
 //  val userLiveDataState = viewModel.userLiveData.observeAsState(initial = "")
@@ -34,6 +35,13 @@ fun BackupScreen(
 
   var lastBackupTime by remember { mutableStateOf("N/A") }
 
+
+//  val updateDataStore = {
+//    val bs = BackupSettings(user, host, port.toInt(), password)
+//    scope.launch(Dispatchers.IO) {
+//      viewModel.backupSettingsRepository.testWriteDataStore(bs)
+//    }
+//  }
 
   Scaffold(topBar = {
     TopAppBar(
@@ -50,23 +58,35 @@ fun BackupScreen(
 
       TextField(
         value = host,
-        onValueChange = { host = it },
+        onValueChange = {
+          host = it
+
+        },
         label = { Text("host") }
       )
       TextField(
         value = user,
-        onValueChange = { user = it },
+        onValueChange = {
+          user = it
+
+        },
         label = { Text("user") }
       )
       TextField(
         value = password,
-        onValueChange = { password = it },
+        onValueChange = {
+          password = it
+
+        },
         label = { Text("password") }
       )
 
       TextField(
         value = port,
-        onValueChange = { port = it },
+        onValueChange = {
+          port = it
+
+        },
         label = { Text("port") }
       )
 
@@ -112,8 +132,9 @@ fun BackupScreen(
       }
 
       Row {
-        Text("Last backup: $lastBackupTime")
+        Text("Last backup time: $lastBackupTime")
       }
+      Text("status of last backup attempt: success || error")
     }
   }
 
