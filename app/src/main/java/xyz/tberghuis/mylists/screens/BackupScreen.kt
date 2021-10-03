@@ -1,17 +1,30 @@
 package xyz.tberghuis.mylists.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import xyz.tberghuis.mylists.data.BackupSettings
 import xyz.tberghuis.mylists.service.BackupService
 
 
 @Composable
-fun BackupScreen() {
+fun BackupScreen(
+  viewModel: BackupViewModel = hiltViewModel(),
+
+  ) {
 //  Text("hello backup")
+
+  val userDataStoreState = viewModel.userFlow.collectAsState(initial = "")
+
+//  val userLiveDataState = viewModel.userLiveData.observeAsState(initial = "")
+
 
   val scope = rememberCoroutineScope()
   var host by remember { mutableStateOf("") }
@@ -30,6 +43,11 @@ fun BackupScreen() {
     )
   }) {
     Column {
+
+      Text(userDataStoreState.value)
+//      Text(userLiveDataState.value)
+
+
       TextField(
         value = host,
         onValueChange = { host = it },
@@ -52,12 +70,41 @@ fun BackupScreen() {
         label = { Text("port") }
       )
 
+      Button(
+        onClick = {
+          scope.launch(Dispatchers.IO) {
+
+            Log.d("xxx", "user $user")
+            val bs = BackupSettings(user, "host", 22, "password")
+            viewModel.backupSettingsRepository.testWriteDataStore(bs)
+          }
+        }
+      ) {
+        Text("save this is tmp")
+      }
+
+
+      Button(
+        onClick = {
+          scope.launch(Dispatchers.IO) {
+
+
+            val prefData = viewModel.backupSettingsRepository.dataStore.data.first()
+            Log.d("xxx", prefData.toString())
+          }
+        }
+      ) {
+        Text("read datastore")
+      }
+
       // TODO disable button when uploading
       Button(
         onClick = {
           scope.launch(Dispatchers.Default) {
 
             BackupService.uploadDb(user, host, port.toInt(), password)
+
+
           }
         }
       ) {

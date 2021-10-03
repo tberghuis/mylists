@@ -1,15 +1,16 @@
 package xyz.tberghuis.mylists.data
 
+import android.content.Context
 import android.util.Log
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.emptyPreferences
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
+import javax.inject.Inject
+import javax.inject.Singleton
 
 
 data class BackupSettings(
@@ -19,7 +20,14 @@ data class BackupSettings(
   val password: String
 )
 
-class BackupSettingsRepository(private val dataStore: DataStore<Preferences>) {
+
+@Singleton
+class BackupSettingsRepository
+@Inject constructor(
+  val dataStore: DataStore<Preferences>
+) {
+
+
   private object PreferencesKeys {
     val BACKUP_USER = stringPreferencesKey("backup_user")
     val BACKUP_HOST = stringPreferencesKey("backup_host")
@@ -39,9 +47,21 @@ class BackupSettingsRepository(private val dataStore: DataStore<Preferences>) {
       }
     }.map { preferences ->
       // TODO
+
+      val user = preferences[PreferencesKeys.BACKUP_USER] ?: ""
+
       BackupSettings(
-        "user", "host", 22, "password"
+        user, "host", 22, "password"
 
       )
     }
+
+
+  suspend fun testWriteDataStore(backupSettings: BackupSettings) {
+    dataStore.edit { preferences ->
+      Log.d("xxx", "datastore edit")
+      preferences[PreferencesKeys.BACKUP_USER] = backupSettings.user
+//        ...
+    }
+  }
 }
