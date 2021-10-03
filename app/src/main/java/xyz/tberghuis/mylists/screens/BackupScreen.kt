@@ -17,24 +17,7 @@ import xyz.tberghuis.mylists.service.BackupService
 fun BackupScreen(
   viewModel: BackupViewModel = hiltViewModel(),
 ) {
-
-  val scope = rememberCoroutineScope()
-  var host by remember { mutableStateOf("") }
-  var user by remember { mutableStateOf("") }
-  var password by remember { mutableStateOf("") }
-  var port by remember { mutableStateOf("22") }
-  var filePath by remember { mutableStateOf("") }
-
   var lastBackupTime by remember { mutableStateOf("N/A") }
-
-  LaunchedEffect(Unit) {
-    val bs = viewModel.backupSettingsRepository.backupSettingsFlow.first()
-    host = bs.host
-    user = bs.user
-    password = bs.password
-    filePath = bs.filePath
-    port = bs.port.toString()
-  }
 
   Scaffold(topBar = {
     TopAppBar(
@@ -46,54 +29,47 @@ fun BackupScreen(
     Column {
 
       TextField(
-        value = host,
+        value = viewModel.host,
         onValueChange = {
-          host = it
+          viewModel.host = it
         },
         label = { Text("host") }
       )
       TextField(
-        value = user,
+        value = viewModel.user,
         onValueChange = {
-          user = it
+          viewModel.user = it
         },
         label = { Text("user") }
       )
       // todo eye ****
       TextField(
-        value = password,
+        value = viewModel.password,
         onValueChange = {
-          password = it
+          viewModel.password = it
         },
         label = { Text("password") }
       )
       // todo number input keyboard
       TextField(
-        value = port,
+        value = viewModel.port,
         onValueChange = {
-          port = it
+          viewModel.port = it
         },
         label = { Text("port") }
       )
 
       TextField(
-        value = filePath,
+        value = viewModel.filePath,
         onValueChange = {
-          filePath = it
+          viewModel.filePath = it
         },
         label = { Text("File path") }
       )
 
-
       Row {
         Button(
-          onClick = {
-            scope.launch(Dispatchers.IO) {
-              Log.d("xxx", "user $user")
-              val bs = BackupSettings(user, host, port.toInt(), password, filePath)
-              viewModel.backupSettingsRepository.save(bs)
-            }
-          }
+          onClick = viewModel::save
         ) {
           Text("save")
         }
@@ -101,17 +77,11 @@ fun BackupScreen(
         // TODO disable button when uploading
         // todo disable buttons before launchedEffect first() completes
         Button(
-          onClick = {
-            scope.launch(Dispatchers.Default) {
-              BackupService.uploadDb(user, host, port.toInt(), password)
-            }
-          }
+          onClick = viewModel::backup
         ) {
           Text("Backup")
         }
       }
-
-
 
       Row {
         Text("Last backup time: $lastBackupTime")
