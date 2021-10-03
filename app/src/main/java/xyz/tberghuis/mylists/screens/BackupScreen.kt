@@ -86,7 +86,8 @@ fun BackupScreen(
       Row {
         Text("Last backup time: $lastBackupTime")
       }
-      Text("status of last backup attempt: success || error")
+      Text("status: ${viewModel.backupResultStatus}")
+      Text(viewModel.backupResultMessage)
     }
   }
 

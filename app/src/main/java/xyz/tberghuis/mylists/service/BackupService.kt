@@ -4,11 +4,25 @@ import android.util.Log
 import com.jcraft.jsch.*
 import java.util.*
 
+// i need to learn better practices
+// this will come with time
+class BackupResult(
+  val status: String,
+  val message: String
+)
+
 class BackupService {
   companion object {
     // should I extract parameters from DB??? probably
     // do that in another function later
-    fun uploadDb(user: String, host: String, port: Int, password: String) {
+    fun uploadDb(
+      user: String,
+      host: String,
+      port: Int,
+      password: String,
+      filePath: String
+    ): BackupResult {
+
       try {
         val ssh = JSch()
         val session: Session = ssh.getSession(user, host, port)
@@ -27,24 +41,23 @@ class BackupService {
         // use the put method , if you are using android remember to remove "file://" and use only the relative path
 
         //TODO Environment getDataDir???
-        sftp.put("/data/data/xyz.tberghuis.mylists/databases/mylists.db", "mylists.db")
-        val success = true
-        if (success) {
-          // The file has been uploaded successfully
-          Log.d("xxx", "success")
-        } else {
-          Log.d("xxx", "fail")
-        }
+        sftp.put("/data/data/xyz.tberghuis.mylists/databases/mylists.db", filePath)
+
         channel.disconnect()
         session.disconnect()
+        return BackupResult("success", "")
+
+
       } catch (e: JSchException) {
         // can I println in release builds?
         // I should probably Log.e
-        println(e.message.toString())
-        e.printStackTrace()
+//        println(e.message.toString())
+//        e.printStackTrace()
+        return BackupResult("fail", e.message.toString())
       } catch (e: SftpException) {
-        println(e.message.toString())
-        e.printStackTrace()
+//        println(e.message.toString())
+//        e.printStackTrace()
+        return BackupResult("fail", e.message.toString())
       }
     }
   }

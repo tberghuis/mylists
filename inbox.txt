@@ -1,4 +1,6 @@
-move mutablestate to viewmodel
+some sort of backup waiting indicator
+make buttons disabled
+loading spinner in backup button
 
 #########################
 copy from codelab, but make dataStore private property of repository
