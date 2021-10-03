@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.hilt.navigation.compose.hiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
@@ -17,31 +16,25 @@ import xyz.tberghuis.mylists.service.BackupService
 @Composable
 fun BackupScreen(
   viewModel: BackupViewModel = hiltViewModel(),
-
-  ) {
-//  Text("hello backup")
-
-  // should i collect in launchedEffect
-  val userDataStoreState = viewModel.userFlow.collectAsState(initial = "")
-
-//  val userLiveDataState = viewModel.userLiveData.observeAsState(initial = "")
-
+) {
 
   val scope = rememberCoroutineScope()
   var host by remember { mutableStateOf("") }
   var user by remember { mutableStateOf("") }
   var password by remember { mutableStateOf("") }
   var port by remember { mutableStateOf("22") }
+  var filePath by remember { mutableStateOf("") }
 
   var lastBackupTime by remember { mutableStateOf("N/A") }
 
-
-//  val updateDataStore = {
-//    val bs = BackupSettings(user, host, port.toInt(), password)
-//    scope.launch(Dispatchers.IO) {
-//      viewModel.backupSettingsRepository.testWriteDataStore(bs)
-//    }
-//  }
+  LaunchedEffect(Unit) {
+    val bs = viewModel.backupSettingsRepository.backupSettingsFlow.first()
+    host = bs.host
+    user = bs.user
+    password = bs.password
+    filePath = bs.filePath
+    port = bs.port.toString()
+  }
 
   Scaffold(topBar = {
     TopAppBar(
@@ -52,15 +45,10 @@ fun BackupScreen(
   }) {
     Column {
 
-      Text(userDataStoreState.value)
-//      Text(userLiveDataState.value)
-
-
       TextField(
         value = host,
         onValueChange = {
           host = it
-
         },
         label = { Text("host") }
       )
@@ -68,68 +56,62 @@ fun BackupScreen(
         value = user,
         onValueChange = {
           user = it
-
         },
         label = { Text("user") }
       )
+      // todo eye ****
       TextField(
         value = password,
         onValueChange = {
           password = it
-
         },
         label = { Text("password") }
       )
-
+      // todo number input keyboard
       TextField(
         value = port,
         onValueChange = {
           port = it
-
         },
         label = { Text("port") }
       )
 
-      Button(
-        onClick = {
-          scope.launch(Dispatchers.IO) {
+      TextField(
+        value = filePath,
+        onValueChange = {
+          filePath = it
+        },
+        label = { Text("File path") }
+      )
 
-            Log.d("xxx", "user $user")
-            val bs = BackupSettings(user, "host", 22, "password")
-            viewModel.backupSettingsRepository.testWriteDataStore(bs)
+
+      Row {
+        Button(
+          onClick = {
+            scope.launch(Dispatchers.IO) {
+              Log.d("xxx", "user $user")
+              val bs = BackupSettings(user, host, port.toInt(), password, filePath)
+              viewModel.backupSettingsRepository.save(bs)
+            }
           }
+        ) {
+          Text("save")
         }
-      ) {
-        Text("save this is tmp")
+
+        // TODO disable button when uploading
+        // todo disable buttons before launchedEffect first() completes
+        Button(
+          onClick = {
+            scope.launch(Dispatchers.Default) {
+              BackupService.uploadDb(user, host, port.toInt(), password)
+            }
+          }
+        ) {
+          Text("Backup")
+        }
       }
 
 
-      Button(
-        onClick = {
-          scope.launch(Dispatchers.IO) {
-
-
-            val prefData = viewModel.backupSettingsRepository.dataStore.data.first()
-            Log.d("xxx", prefData.toString())
-          }
-        }
-      ) {
-        Text("read datastore")
-      }
-
-      // TODO disable button when uploading
-      Button(
-        onClick = {
-          scope.launch(Dispatchers.Default) {
-
-            BackupService.uploadDb(user, host, port.toInt(), password)
-
-
-          }
-        }
-      ) {
-        Text("Backup")
-      }
 
       Row {
         Text("Last backup time: $lastBackupTime")
