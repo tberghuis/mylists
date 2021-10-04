@@ -29,6 +29,7 @@ class BackupViewModel @Inject constructor(
   var port by mutableStateOf("22")
   var filePath by mutableStateOf("")
 
+  var lastBackupTime by mutableStateOf("")
   var backupResultStatus by mutableStateOf("")
   var backupResultMessage by mutableStateOf("")
 
@@ -40,13 +41,14 @@ class BackupViewModel @Inject constructor(
       password = bs.password
       filePath = bs.filePath
       port = bs.port.toString()
+      lastBackupTime = bs.lastBackupTime
     }
   }
 
   fun save() {
     viewModelScope.launch(Dispatchers.IO) {
       Log.d("xxx", "user $user")
-      val bs = BackupSettings(user, host, port.toInt(), password, filePath)
+      val bs = BackupSettings(user, host, port.toInt(), password, filePath, lastBackupTime)
       backupSettingsRepository.save(bs)
     }
   }
@@ -56,6 +58,12 @@ class BackupViewModel @Inject constructor(
       val br = BackupService.uploadDb(user, host, port.toInt(), password, filePath)
       backupResultStatus = br.status
       backupResultMessage = br.message
+
+      if (br.status == "success") {
+        lastBackupTime = br.time
+        backupSettingsRepository.saveBackupTime(br.time)
+      }
+
     }
   }
 

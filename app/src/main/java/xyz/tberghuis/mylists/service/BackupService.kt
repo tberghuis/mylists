@@ -2,13 +2,15 @@ package xyz.tberghuis.mylists.service
 
 import android.util.Log
 import com.jcraft.jsch.*
+import java.text.SimpleDateFormat
 import java.util.*
 
 // i need to learn better practices
 // this will come with time
 class BackupResult(
   val status: String,
-  val message: String
+  val message: String,
+  val time: String
 )
 
 class BackupService {
@@ -45,7 +47,11 @@ class BackupService {
 
         channel.disconnect()
         session.disconnect()
-        return BackupResult("success", "")
+
+        val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm")
+        val currentDate = sdf.format(Date())
+
+        return BackupResult("success", "", currentDate)
 
 
       } catch (e: JSchException) {
@@ -53,11 +59,11 @@ class BackupService {
         // I should probably Log.e
 //        println(e.message.toString())
 //        e.printStackTrace()
-        return BackupResult("fail", e.message.toString())
+        return BackupResult("fail", e.message.toString(), "")
       } catch (e: SftpException) {
 //        println(e.message.toString())
 //        e.printStackTrace()
-        return BackupResult("fail", e.message.toString())
+        return BackupResult("fail", e.message.toString(), "")
       }
     }
   }

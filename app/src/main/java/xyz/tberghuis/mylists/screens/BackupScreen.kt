@@ -17,7 +17,7 @@ import xyz.tberghuis.mylists.service.BackupService
 fun BackupScreen(
   viewModel: BackupViewModel = hiltViewModel(),
 ) {
-  var lastBackupTime by remember { mutableStateOf("N/A") }
+//  var lastBackupTime by remember { mutableStateOf("N/A") }
 
   Scaffold(topBar = {
     TopAppBar(
@@ -84,7 +84,7 @@ fun BackupScreen(
       }
 
       Row {
-        Text("Last backup time: $lastBackupTime")
+        Text("Last backup time: ${viewModel.lastBackupTime}")
       }
       Text("status: ${viewModel.backupResultStatus}")
       Text(viewModel.backupResultMessage)

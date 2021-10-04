@@ -2,6 +2,13 @@ some sort of backup waiting indicator
 make buttons disabled
 loading spinner in backup button
 
+jsch sftp kotlin examples to reference
+
+testing document
+
+fix UI...
+make issues for incomplete tasks features
+
 #########################
 copy from codelab, but make dataStore private property of repository
 

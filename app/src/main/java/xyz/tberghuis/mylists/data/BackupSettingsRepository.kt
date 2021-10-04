@@ -15,7 +15,8 @@ data class BackupSettings(
   val host: String,
   val port: Int,
   val password: String,
-  val filePath: String
+  val filePath: String,
+  val lastBackupTime: String
 )
 
 @Singleton
@@ -30,6 +31,7 @@ class BackupSettingsRepository
     val BACKUP_PORT = intPreferencesKey("backup_port")
     val BACKUP_PASSWORD = stringPreferencesKey("backup_password")
     val BACKUP_FILEPATH = stringPreferencesKey("backup_filepath")
+    val BACKUP_LAST_TIME = stringPreferencesKey("backup_last_time")
   }
 
   val backupSettingsFlow: Flow<BackupSettings> = dataStore.data
@@ -48,9 +50,10 @@ class BackupSettingsRepository
       val port = preferences[PreferencesKeys.BACKUP_PORT] ?: 22
       val password = preferences[PreferencesKeys.BACKUP_PASSWORD] ?: ""
       val filePath = preferences[PreferencesKeys.BACKUP_FILEPATH] ?: ""
+      val lastBackupTime = preferences[PreferencesKeys.BACKUP_LAST_TIME] ?: "N/A"
 
       BackupSettings(
-        user, host, port, password, filePath
+        user, host, port, password, filePath, lastBackupTime
       )
     }
 
@@ -61,6 +64,15 @@ class BackupSettingsRepository
       preferences[PreferencesKeys.BACKUP_PORT] = backupSettings.port
       preferences[PreferencesKeys.BACKUP_PASSWORD] = backupSettings.password
       preferences[PreferencesKeys.BACKUP_FILEPATH] = backupSettings.filePath
+      preferences[PreferencesKeys.BACKUP_LAST_TIME] = backupSettings.lastBackupTime
     }
   }
+
+
+  suspend fun saveBackupTime(time: String) {
+    dataStore.edit { preferences ->
+      preferences[PreferencesKeys.BACKUP_LAST_TIME] = time
+    }
+  }
+
 }
