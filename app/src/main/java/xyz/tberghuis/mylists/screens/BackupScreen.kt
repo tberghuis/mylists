@@ -81,6 +81,14 @@ fun BackupScreen(
         ) {
           Text("Backup")
         }
+
+
+        Button(
+          onClick = viewModel::import
+        ) {
+          Text("Import")
+        }
+
       }
 
       Row {

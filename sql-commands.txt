@@ -4,6 +4,9 @@ adb -s v30 shell
 run-as xyz.tberghuis.mylists
 cd /data/data/xyz.tberghuis.mylists/databases/
 
+ls -la
+
+
 sqlite3 mylists.db
 select * from mylist;
 select * from myitem;

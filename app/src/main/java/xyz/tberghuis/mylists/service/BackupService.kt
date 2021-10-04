@@ -66,5 +66,15 @@ class BackupService {
         return BackupResult("fail", e.message.toString(), "")
       }
     }
+
+
+//    fun importDb() {
+//      Log.d("xxx", "import db")
+//
+//      context.deleteDatabase("mylists.db")
+//
+//    }
+
+
   }
 }

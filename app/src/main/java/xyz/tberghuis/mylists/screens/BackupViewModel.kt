@@ -13,11 +13,13 @@ import kotlinx.coroutines.launch
 import xyz.tberghuis.mylists.data.BackupSettings
 import xyz.tberghuis.mylists.data.BackupSettingsRepository
 import xyz.tberghuis.mylists.service.BackupService
+import xyz.tberghuis.mylists.service.ImportBackupService
 import javax.inject.Inject
 
 @HiltViewModel
 class BackupViewModel @Inject constructor(
   private val backupSettingsRepository: BackupSettingsRepository,
+  private val importBackupService: ImportBackupService
 ) : ViewModel() {
 
   // this class is for things like password field eye state
@@ -35,6 +37,9 @@ class BackupViewModel @Inject constructor(
 
   init {
     viewModelScope.launch(Dispatchers.IO) {
+      // this should be state flow.... or not???
+      // remove save button
+      // one way data flow
       val bs = backupSettingsRepository.backupSettingsFlow.first()
       host = bs.host
       user = bs.user
@@ -66,5 +71,13 @@ class BackupViewModel @Inject constructor(
 
     }
   }
+
+  fun import() {
+    viewModelScope.launch(Dispatchers.Default) {
+//      BackupService.importDb()
+      importBackupService.import(user, host, port.toInt(), password, filePath)
+    }
+  }
+
 
 }

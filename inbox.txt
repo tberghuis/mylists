@@ -1,3 +1,8 @@
+sqlite force flush -wal
+
+remove save button
+
+
 some sort of backup waiting indicator
 make buttons disabled
 loading spinner in backup button
