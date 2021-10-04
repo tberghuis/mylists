@@ -23,7 +23,8 @@ import xyz.tberghuis.mylists.service.TmpFlushService
 class BackupViewModel @Inject constructor(
   private val backupSettingsRepository: BackupSettingsRepository,
   private val importBackupService: ImportBackupService,
-  private val flushService: TmpFlushService
+  private val backupService: BackupService
+//  private val flushService: TmpFlushService
 ) : ViewModel() {
 
   // this class is for things like password field eye state
@@ -108,7 +109,7 @@ class BackupViewModel @Inject constructor(
 
 //      val bs = backupSettingsStateFlow.value
 
-      val br = BackupService.uploadDb(backupSettingsStateFlow.value)
+      val br = backupService.uploadDb(backupSettingsStateFlow.value)
       backupResultStatus = br.status
       backupResultMessage = br.message
 
@@ -131,7 +132,7 @@ class BackupViewModel @Inject constructor(
 
   fun flushWal() {
     viewModelScope.launch(Dispatchers.IO) {
-      flushService.flushDbWal()
+//      flushService.flushDbWal()
     }
 
 
