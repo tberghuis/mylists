@@ -19,6 +19,8 @@ fun BackupScreen(
 ) {
 //  var lastBackupTime by remember { mutableStateOf("N/A") }
 
+  val bs = viewModel.backupSettingsStateFlow.collectAsState().value
+
   Scaffold(topBar = {
     TopAppBar(
       // TODO back/up home arrow
@@ -27,43 +29,32 @@ fun BackupScreen(
     )
   }) {
     Column {
-
       TextField(
-        value = viewModel.host,
-        onValueChange = {
-          viewModel.host = it
-        },
+        value = bs.host,
+        onValueChange = viewModel::updateHost,
         label = { Text("host") }
       )
       TextField(
-        value = viewModel.user,
-        onValueChange = {
-          viewModel.user = it
-        },
+        value = bs.user,
+        onValueChange = viewModel::updateUser,
         label = { Text("user") }
       )
       // todo eye ****
       TextField(
-        value = viewModel.password,
-        onValueChange = {
-          viewModel.password = it
-        },
+        value = bs.password,
+        onValueChange = viewModel::updatePassword,
         label = { Text("password") }
       )
       // todo number input keyboard
       TextField(
-        value = viewModel.port,
-        onValueChange = {
-          viewModel.port = it
-        },
+        value = bs.port.toString(),
+        onValueChange = viewModel::updatePort,
         label = { Text("port") }
       )
 
       TextField(
-        value = viewModel.filePath,
-        onValueChange = {
-          viewModel.filePath = it
-        },
+        value = bs.filePath,
+        onValueChange = viewModel::updateFilePath,
         label = { Text("File path") }
       )
 
@@ -92,7 +83,7 @@ fun BackupScreen(
       }
 
       Row {
-        Text("Last backup time: ${viewModel.lastBackupTime}")
+        Text("Last backup time: ${bs.lastBackupTime}")
       }
       Text("status: ${viewModel.backupResultStatus}")
       Text(viewModel.backupResultMessage)

@@ -2,6 +2,7 @@ package xyz.tberghuis.mylists.service
 
 import android.util.Log
 import com.jcraft.jsch.*
+import xyz.tberghuis.mylists.data.BackupSettings
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -18,21 +19,17 @@ class BackupService {
     // should I extract parameters from DB??? probably
     // do that in another function later
     fun uploadDb(
-      user: String,
-      host: String,
-      port: Int,
-      password: String,
-      filePath: String
+     bs: BackupSettings
     ): BackupResult {
 
       try {
         val ssh = JSch()
-        val session: Session = ssh.getSession(user, host, port)
+        val session: Session = ssh.getSession(bs.user, bs.host, bs.port)
 
         val config = Properties()
         config["StrictHostKeyChecking"] = "no"
         session.setConfig(config)
-        session.setPassword(password)
+        session.setPassword(bs.password)
         session.connect()
         val channel: Channel = session.openChannel("sftp")
         channel.connect()
@@ -43,7 +40,7 @@ class BackupService {
         // use the put method , if you are using android remember to remove "file://" and use only the relative path
 
         //TODO Environment getDataDir???
-        sftp.put("/data/data/xyz.tberghuis.mylists/databases/mylists.db", filePath)
+        sftp.put("/data/data/xyz.tberghuis.mylists/databases/mylists.db", bs.filePath)
 
         channel.disconnect()
         session.disconnect()

@@ -11,12 +11,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 data class BackupSettings(
-  val user: String,
-  val host: String,
-  val port: Int,
-  val password: String,
-  val filePath: String,
-  val lastBackupTime: String
+  val user: String = "",
+  val host: String = "",
+  val port: Int = 22,
+  val password: String = "",
+  val filePath: String = "",
+  val lastBackupTime: String = "N/A"
 )
 
 @Singleton
