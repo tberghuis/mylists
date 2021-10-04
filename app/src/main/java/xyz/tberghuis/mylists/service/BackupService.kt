@@ -1,10 +1,14 @@
 package xyz.tberghuis.mylists.service
 
+import android.database.Cursor
 import android.util.Log
 import com.jcraft.jsch.*
 import xyz.tberghuis.mylists.data.BackupSettings
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.sqlite.db.SimpleSQLiteQuery
+import java.lang.RuntimeException
+
 
 // i need to learn better practices
 // this will come with time
@@ -16,11 +20,21 @@ class BackupResult(
 
 class BackupService {
   companion object {
+
+//    fun flushDbWal(){
+//      val c: Cursor = room.query(SimpleSQLiteQuery("pragma wal_checkpoint(full)"))
+//      if (c.moveToFirst() && c.getInt(0) == 1) throw RuntimeException("Checkpoint was blocked from completing")
+//    }
+
     // should I extract parameters from DB??? probably
     // do that in another function later
     fun uploadDb(
-     bs: BackupSettings
+      bs: BackupSettings
     ): BackupResult {
+
+      // here i want to force flush wal file
+//      db.execSQL("pragma wal_checkpoint;", null);
+
 
       try {
         val ssh = JSch()

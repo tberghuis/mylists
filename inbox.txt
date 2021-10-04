@@ -1,3 +1,11 @@
+rewrite backupservice class injected appdatabase hilt
+await wal_checkpoint
+
+
+merge import backupservice into backupservice, reuse some jsch code
+
+
+########################
 sqlite force flush -wal
 
 remove save button

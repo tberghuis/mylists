@@ -60,9 +60,9 @@ fun BackupScreen(
 
       Row {
         Button(
-          onClick = viewModel::save
+          onClick = viewModel::flushWal
         ) {
-          Text("save")
+          Text("flush")
         }
 
         // TODO disable button when uploading

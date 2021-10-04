@@ -17,11 +17,13 @@ import xyz.tberghuis.mylists.service.BackupService
 import xyz.tberghuis.mylists.service.ImportBackupService
 import javax.inject.Inject
 import kotlinx.coroutines.flow.collect
+import xyz.tberghuis.mylists.service.TmpFlushService
 
 @HiltViewModel
 class BackupViewModel @Inject constructor(
   private val backupSettingsRepository: BackupSettingsRepository,
-  private val importBackupService: ImportBackupService
+  private val importBackupService: ImportBackupService,
+  private val flushService: TmpFlushService
 ) : ViewModel() {
 
   // this class is for things like password field eye state
@@ -124,6 +126,15 @@ class BackupViewModel @Inject constructor(
 //      BackupService.importDb()
       importBackupService.import(backupSettingsStateFlow.value)
     }
+  }
+
+
+  fun flushWal() {
+    viewModelScope.launch(Dispatchers.IO) {
+      flushService.flushDbWal()
+    }
+
+
   }
 
 
