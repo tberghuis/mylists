@@ -24,23 +24,15 @@ class BackupViewModel @Inject constructor(
   private val backupSettingsRepository: BackupSettingsRepository,
   private val importBackupService: ImportBackupService,
   private val backupService: BackupService
-//  private val flushService: TmpFlushService
 ) : ViewModel() {
 
   // this class is for things like password field eye state
 
-
-//  var host by mutableStateOf("")
-//  var user by mutableStateOf("")
-//  var password by mutableStateOf("")
-//  var port by mutableStateOf("22")
-//  var filePath by mutableStateOf("")
-
   val backupSettingsStateFlow = MutableStateFlow(BackupSettings())
 
   var uploading by mutableStateOf(false)
+  var importing by mutableStateOf(false)
 
-  //  var lastBackupTime by mutableStateOf("")
   var backupResultStatus by mutableStateOf("")
   var backupResultMessage by mutableStateOf("")
 
@@ -96,50 +88,26 @@ class BackupViewModel @Inject constructor(
     }
   }
 
-
-  fun save() {
-    viewModelScope.launch(Dispatchers.IO) {
-//      Log.d("xxx", "user $user")
-//      val bs = BackupSettings(user, host, port.toInt(), password, filePath, lastBackupTime)
-      backupSettingsRepository.save(backupSettingsStateFlow.value)
-    }
-  }
-
   fun backup() {
     viewModelScope.launch(Dispatchers.Default) {
-
-//      val bs = backupSettingsStateFlow.value
       uploading = true
-
       val br = backupService.uploadDb(backupSettingsStateFlow.value)
       backupResultStatus = br.status
       backupResultMessage = br.message
-
       if (br.status == "success") {
         val bs = backupSettingsStateFlow.value.copy(lastBackupTime = br.time)
         backupSettingsStateFlow.value = bs
         backupSettingsRepository.saveBackupTime(br.time)
       }
       uploading = false
-
     }
   }
 
   fun import() {
     viewModelScope.launch(Dispatchers.Default) {
-//      BackupService.importDb()
+      importing = true
       importBackupService.import(backupSettingsStateFlow.value)
+      // activity should be restarted
     }
   }
-
-
-  fun flushWal() {
-    viewModelScope.launch(Dispatchers.IO) {
-//      flushService.flushDbWal()
-    }
-
-
-  }
-
-
 }
