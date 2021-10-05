@@ -28,9 +28,11 @@ fun BackupScreen(
   viewModel: BackupViewModel = hiltViewModel(),
 ) {
   val bs = viewModel.backupSettingsStateFlow.collectAsState().value
-  val actionEnabled = {
-    !(viewModel.uploading || viewModel.importing)
-  }
+//  val actionEnabled = {
+//    !(viewModel.uploading || viewModel.importing)
+//  }
+  val actionsEnabled = !(viewModel.uploading || viewModel.importing)
+
 
   val context = LocalContext.current
 
@@ -74,14 +76,14 @@ fun BackupScreen(
         // todo disable buttons before backupsettings flow first collects
         // meh
         Button(
-          enabled = actionEnabled(),
+          enabled = actionsEnabled,
           onClick = viewModel::backup
         ) {
           Text("Backup")
         }
 
         Button(
-          enabled = actionEnabled(),
+          enabled = actionsEnabled,
           onClick = {
             viewModel.import(context as Activity)
           }
@@ -96,7 +98,7 @@ fun BackupScreen(
         Text("Last backup time: ${bs.lastBackupTime}")
       }
 
-      if (!actionEnabled()) {
+      if (!actionsEnabled) {
         Text("processing...")
       } else {
         Text("status: ${viewModel.backupResultStatus}")
