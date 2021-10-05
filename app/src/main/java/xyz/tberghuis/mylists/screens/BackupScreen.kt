@@ -29,7 +29,7 @@ fun BackupScreen(
 ) {
   val bs = viewModel.backupSettingsStateFlow.collectAsState().value
   val actionEnabled = {
-    !viewModel.uploading || !viewModel.importing
+    !(viewModel.uploading || viewModel.importing)
   }
 
   val context = LocalContext.current
@@ -82,21 +82,14 @@ fun BackupScreen(
 
         Button(
           enabled = actionEnabled(),
-          onClick = viewModel::import
+          onClick = {
+            viewModel.import(context as Activity)
+          }
+
+
         ) {
           Text("Import")
         }
-
-
-        Button(
-          onClick = {
-//            restartApp(context)
-            triggerRestart(context as Activity)
-          }
-        ) {
-          Text("restart")
-        }
-
       }
 
       Row {
@@ -117,14 +110,3 @@ fun BackupScreen(
 
 }
 
-// this is because I don't know how to reinitialise room after import
-// https://stackoverflow.com/questions/6609414/how-do-i-programmatically-restart-an-android-app?answertab=active#tab-top
-fun triggerRestart(context: Activity) {
-    val intent = Intent(context, MainActivity::class.java)
-    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    context.startActivity(intent)
-    if (context is Activity) {
-        (context as Activity).finish()
-    }
-    Runtime.getRuntime().exit(0)
-}

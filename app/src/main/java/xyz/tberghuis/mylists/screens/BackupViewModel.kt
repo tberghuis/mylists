@@ -1,5 +1,6 @@
 package xyz.tberghuis.mylists.screens
 
+import android.app.Activity
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -103,10 +104,10 @@ class BackupViewModel @Inject constructor(
     }
   }
 
-  fun import() {
+  fun import(activity: Activity) {
     viewModelScope.launch(Dispatchers.Default) {
       importing = true
-      importBackupService.import(backupSettingsStateFlow.value)
+      importBackupService.import(backupSettingsStateFlow.value, activity)
       // activity should be restarted
     }
   }
