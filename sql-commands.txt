@@ -1,5 +1,7 @@
 adb -s emulator-5554 shell
 adb -s v30 shell
+adb -s LGH93092902d64 shell
+
 
 run-as xyz.tberghuis.mylists
 cd /data/data/xyz.tberghuis.mylists/databases/
@@ -10,6 +12,8 @@ ls -la
 sqlite3 mylists.db
 select * from mylist;
 select * from myitem;
+
+pragma wal_checkpoint(full);
 
 .exit
 rm *
