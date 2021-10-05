@@ -21,6 +21,10 @@ fun BackupScreen(
 
   val bs = viewModel.backupSettingsStateFlow.collectAsState().value
 
+  val actionEnabled = {
+    !viewModel.uploading
+  }
+
   Scaffold(topBar = {
     TopAppBar(
       // TODO back/up home arrow
@@ -59,15 +63,12 @@ fun BackupScreen(
       )
 
       Row {
-        Button(
-          onClick = viewModel::flushWal
-        ) {
-          Text("flush")
-        }
+
 
         // TODO disable button when uploading
         // todo disable buttons before launchedEffect first() completes
         Button(
+          enabled = actionEnabled(),
           onClick = viewModel::backup
         ) {
           Text("Backup")
@@ -75,6 +76,7 @@ fun BackupScreen(
 
 
         Button(
+          enabled = actionEnabled(),
           onClick = viewModel::import
         ) {
           Text("Import")
@@ -85,8 +87,15 @@ fun BackupScreen(
       Row {
         Text("Last backup time: ${bs.lastBackupTime}")
       }
-      Text("status: ${viewModel.backupResultStatus}")
-      Text(viewModel.backupResultMessage)
+
+      if (!actionEnabled()) {
+        Text("processing...")
+      } else {
+        Text("status: ${viewModel.backupResultStatus}")
+        Text(viewModel.backupResultMessage)
+      }
+
+
     }
   }
 

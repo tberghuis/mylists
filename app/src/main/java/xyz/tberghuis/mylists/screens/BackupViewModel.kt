@@ -38,6 +38,7 @@ class BackupViewModel @Inject constructor(
 
   val backupSettingsStateFlow = MutableStateFlow(BackupSettings())
 
+  var uploading by mutableStateOf(false)
 
   //  var lastBackupTime by mutableStateOf("")
   var backupResultStatus by mutableStateOf("")
@@ -108,6 +109,7 @@ class BackupViewModel @Inject constructor(
     viewModelScope.launch(Dispatchers.Default) {
 
 //      val bs = backupSettingsStateFlow.value
+      uploading = true
 
       val br = backupService.uploadDb(backupSettingsStateFlow.value)
       backupResultStatus = br.status
@@ -118,6 +120,7 @@ class BackupViewModel @Inject constructor(
         backupSettingsStateFlow.value = bs
         backupSettingsRepository.saveBackupTime(br.time)
       }
+      uploading = false
 
     }
   }
