@@ -33,6 +33,7 @@ class BackupService
   private val room: AppDatabase
 ) {
   private fun flushDbWal() {
+    // https://stackoverflow.com/questions/50914254/room-pragma-query
     val c: Cursor = room.query(SimpleSQLiteQuery("pragma wal_checkpoint(full)"))
     if (c.moveToFirst() && c.getInt(0) == 1) throw RuntimeException("Checkpoint was blocked from completing")
   }
@@ -62,14 +63,5 @@ class BackupService
       return BackupResult("fail", e.message.toString(), "")
     }
   }
-
-
-//    fun importDb() {
-//      Log.d("xxx", "import db")
-//
-//      context.deleteDatabase("mylists.db")
-//
-//    }
-
 
 }
