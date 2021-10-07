@@ -1,11 +1,4 @@
-
-release
-
-issues
-
-release notes
-- add backup import functionality
-- edit cursor position fix
+import warning dialog
 
 #########################################
 

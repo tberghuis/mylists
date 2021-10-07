@@ -27,6 +27,7 @@ fun BackupScreen(
   val actionsEnabled = !(viewModel.uploading || viewModel.importing)
   var passwordVisibility by remember { mutableStateOf(false) }
   val context = LocalContext.current
+  var importDialog by remember { mutableStateOf(false) }
 
   Scaffold(topBar = {
     TopAppBar(
@@ -78,7 +79,7 @@ fun BackupScreen(
         label = { Text("File path") }
       )
 
-      Row (horizontalArrangement = Arrangement.spacedBy(10.dp)){
+      Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         // todo disable buttons before backupsettings flow first collects
         // meh
         Button(
@@ -91,10 +92,9 @@ fun BackupScreen(
         Button(
           enabled = actionsEnabled,
           onClick = {
-            viewModel.import(context as Activity)
+//            viewModel.import(context as Activity)
+            importDialog = true
           }
-
-
         ) {
           Text("Import")
         }
@@ -115,6 +115,43 @@ fun BackupScreen(
     }
   }
 
+  if (importDialog) {
+    ImportAlertDialog({ viewModel.import(context as Activity) }, { importDialog = false })
+  }
 
+}
+
+
+@Composable
+fun ImportAlertDialog(
+  import: () -> Unit,
+  close: () -> Unit
+) {
+  AlertDialog(
+    onDismissRequest = close,
+    title = {
+      Text(text = "Warning")
+    },
+    text = {
+      Text("Importing will delete all your current lists")
+    },
+    confirmButton = {
+      Button(
+        onClick = {
+          close()
+          import()
+        }
+      ) {
+        Text("Confirm")
+      }
+    },
+    dismissButton = {
+      Button(
+        onClick = close
+      ) {
+        Text("Cancel")
+      }
+    }
+  )
 }
 
