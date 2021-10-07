@@ -1,7 +1,6 @@
 package xyz.tberghuis.mylists
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
@@ -15,8 +14,6 @@ import xyz.tberghuis.mylists.screens.AddListScreen
 import xyz.tberghuis.mylists.screens.BackupScreen
 import xyz.tberghuis.mylists.screens.HomeScreen
 import xyz.tberghuis.mylists.screens.ListScreen
-import xyz.tberghuis.mylists.tmp.BackupDbSandbox
-import xyz.tberghuis.mylists.tmp.MenuSandbox
 import xyz.tberghuis.mylists.ui.theme.MyListsTheme
 
 @AndroidEntryPoint
