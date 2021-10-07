@@ -1,11 +1,13 @@
-finish what i started
-cull notes
+
 release
 
 update play store page and github readme, make github issues
 
 issues
 loading spinner backup, import buttons
+encrypt password datastore, or is there special encrypted storage
+up navigation title bar backup screen
+edit list title, enter to submit
 
 
 release notes
@@ -14,82 +16,4 @@ release notes
 
 #########################################
 
-cursor try compose 1.1.0-alpha05
-https://stackoverflow.com/questions/69250688/jetpack-compose-textfield-is-there-a-way-to-show-a-drag-handle-bubble-to-move-c?noredirect=1#comment122658690_69250688
 
-
-https://developer.android.com/codelabs/android-preferences-datastore#0
-
-BackupViewModel
-use codelab as a reference
-
-put hidden.txt in a keepassXC db
-
-Datastore codelab x 2
-
-Datastore compose
-
-backup credentials store datastore....
-read docs
-get data to save,
-read saved data when doing backup
-
-password ***** (o)
-encrypt password datastore, or is there special encrypted storage
-
-
-####################
-UI
-toast
-center
-padding
-
-
-
-#####################
-
-
-UI
-
-...
-play store release
-
-
-
-
-
-
-######################################3
-github issues
-
-
-sftp single file
-wsl hostname -I
-172.22.66.172
-
-wsl static ip???
-
-get access to db file
-what permission will i need
-
-use java lib jsch???
-
-
-why did the first test fail????
-
-store password encrypted
-
-android get sqlite databases directory location folder
-
-vultr test
-
-nav drawer back button
-
-fuck a nav drawer, in future use flutter
-menu icon top bar backup screen
-
-
-CompositionLocal navcontroller
-
-
-edit list title, enter to submit
