@@ -1,14 +1,7 @@
 
 release
 
-update play store page and github readme, make github issues
-
 issues
-loading spinner backup, import buttons
-encrypt password datastore, or is there special encrypted storage
-up navigation title bar backup screen
-edit list title, enter to submit
-
 
 release notes
 - add backup import functionality
