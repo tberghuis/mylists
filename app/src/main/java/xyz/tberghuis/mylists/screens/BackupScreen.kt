@@ -1,41 +1,27 @@
 package xyz.tberghuis.mylists.screens
 
 import android.app.Activity
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.launch
-import xyz.tberghuis.mylists.data.BackupSettings
-import xyz.tberghuis.mylists.service.BackupService
-import android.app.AlarmManager
-
-import android.app.PendingIntent
-import android.content.Context
-
-import android.content.Intent
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.ui.text.input.KeyboardType
-import xyz.tberghuis.mylists.MainActivity
-import kotlin.system.exitProcess
-
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 
 @Composable
 fun BackupScreen(
   viewModel: BackupViewModel = hiltViewModel(),
 ) {
   val bs = viewModel.backupSettingsStateFlow.collectAsState().value
-//  val actionEnabled = {
-//    !(viewModel.uploading || viewModel.importing)
-//  }
   val actionsEnabled = !(viewModel.uploading || viewModel.importing)
-
-
+  var passwordVisibility by remember { mutableStateOf(false) }
   val context = LocalContext.current
 
   Scaffold(topBar = {
@@ -55,20 +41,30 @@ fun BackupScreen(
         onValueChange = viewModel::updateUser,
         label = { Text("user") }
       )
-      // todo eye ****
+      // https://stackoverflow.com/questions/65304229/toggle-password-field-jetpack-compose
       TextField(
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         value = bs.password,
         onValueChange = viewModel::updatePassword,
-        label = { Text("password") }
+        label = { Text("password") },
+        visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
+        trailingIcon = {
+          val image = if (passwordVisibility)
+            Icons.Filled.Visibility
+          else Icons.Filled.VisibilityOff
+          IconButton(onClick = {
+            passwordVisibility = !passwordVisibility
+          }) {
+            Icon(imageVector = image, "")
+          }
+        }
       )
-      // todo number input keyboard
       TextField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         value = bs.port.toString(),
         onValueChange = viewModel::updatePort,
         label = { Text("port") }
       )
-
       TextField(
         value = bs.filePath,
         onValueChange = viewModel::updateFilePath,
