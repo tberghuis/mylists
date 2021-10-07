@@ -1,0 +1,3 @@
+remove Log.d and println statements
+update version app gradle
+test db migrations
