@@ -1,5 +1,8 @@
 remove Log.d and println statements
 update version app gradle
 test db migrations
+tag release github, attach aab
 
-tag release add aab to github
+[optional]
+edit play store description
+edit github readme
