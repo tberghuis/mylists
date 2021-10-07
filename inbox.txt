@@ -2,37 +2,17 @@ finish what i started
 cull notes
 release
 
-UI spacing
+update play store page and github readme, make github issues
+
+issues
+loading spinner backup, import buttons
 
 
-########################
-sqlite force flush -wal
-
-remove save button
-
-
-some sort of backup waiting indicator
-make buttons disabled
-loading spinner in backup button
-
-jsch sftp kotlin examples to reference
-
-testing document
-
-fix UI...
-make issues for incomplete tasks features
-
-#########################
-copy from codelab, but make dataStore private property of repository
-
-remote save path as a TextField
-
-port field numbers only
-import db
-
+release notes
+- add backup import functionality
+- edit cursor position fix
 
 #########################################
-fresh github repo
 
 cursor try compose 1.1.0-alpha05
 https://stackoverflow.com/questions/69250688/jetpack-compose-textfield-is-there-a-way-to-show-a-drag-handle-bubble-to-move-c?noredirect=1#comment122658690_69250688
