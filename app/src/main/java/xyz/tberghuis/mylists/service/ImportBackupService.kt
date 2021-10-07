@@ -3,51 +3,34 @@ package xyz.tberghuis.mylists.service
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import com.jcraft.jsch.*
+import dagger.hilt.android.qualifiers.ApplicationContext
 import xyz.tberghuis.mylists.MainActivity
 import xyz.tberghuis.mylists.data.BackupSettings
 import xyz.tberghuis.mylists.util.initSecureChannel
-import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
-
-
-// can hilt inject activity???
 
 @Singleton
 class ImportBackupService
 @Inject constructor(
-  private val context: Context // this is appContext
+  @ApplicationContext private val context: Context // this is appContext
 ) {
-
-  // I should do some warnings...
+  // TODO I should do some warning dialog...
   fun import(
     bs: BackupSettings,
     activity: Activity
   ) {
-    Log.d("xxx", "import service")
     context.deleteDatabase("mylists.db")
-
-    // download db
-
-    //    copy to correct dir
-
-    // restart activity
-
     try {
       val channelWrapper = initSecureChannel(bs.user, bs.host, bs.port, bs.password)
-      channelWrapper.sftp.get(bs.filePath, "/data/data/xyz.tberghuis.mylists/databases/mylists.db")
+      val dbPath = context.getDatabasePath("mylists.db").absolutePath
+      channelWrapper.sftp.get(bs.filePath, dbPath)
       channelWrapper.disconnect()
-
     } catch (e: Exception) {
-// TODO
+      // TODO
     }
-
     triggerRestart(activity)
-
   }
-
 }
 
 // this is because I don't know how to reinitialise room after import
