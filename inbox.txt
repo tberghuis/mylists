@@ -1,8 +1,10 @@
-rewrite backupservice class injected appdatabase hilt
-await wal_checkpoint
+finish what i started
+cull notes
+release
 
-
-merge import backupservice into backupservice, reuse some jsch code
+port number field input
+password field
+UI spacing
 
 
 ########################
