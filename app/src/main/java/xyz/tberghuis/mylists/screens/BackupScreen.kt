@@ -1,8 +1,10 @@
 package xyz.tberghuis.mylists.screens
 
 import android.app.Activity
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
@@ -11,9 +13,11 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun BackupScreen(
@@ -30,7 +34,10 @@ fun BackupScreen(
       title = { Text("Backup") }
     )
   }) {
-    Column {
+    Column(
+      modifier = Modifier.padding(10.dp),
+      verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
       TextField(
         value = bs.host,
         onValueChange = viewModel::updateHost,
@@ -71,7 +78,7 @@ fun BackupScreen(
         label = { Text("File path") }
       )
 
-      Row {
+      Row (horizontalArrangement = Arrangement.spacedBy(10.dp)){
         // todo disable buttons before backupsettings flow first collects
         // meh
         Button(
