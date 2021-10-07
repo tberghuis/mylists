@@ -19,6 +19,8 @@ import android.app.PendingIntent
 import android.content.Context
 
 import android.content.Intent
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
 import xyz.tberghuis.mylists.MainActivity
 import kotlin.system.exitProcess
 
@@ -61,6 +63,7 @@ fun BackupScreen(
       )
       // todo number input keyboard
       TextField(
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         value = bs.port.toString(),
         onValueChange = viewModel::updatePort,
         label = { Text("port") }

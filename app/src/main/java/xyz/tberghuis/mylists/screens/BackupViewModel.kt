@@ -84,8 +84,11 @@ class BackupViewModel @Inject constructor(
 
   fun updatePort(port: String) {
     viewModelScope.launch(Dispatchers.IO) {
-      // try???
-      backupSettingsRepository.save(backupSettingsStateFlow.value.copy(port = port.toInt()))
+      try {
+        backupSettingsRepository.save(backupSettingsStateFlow.value.copy(port = port.toInt()))
+      } catch (e: NumberFormatException) {
+//        println(e)
+      }
     }
   }
 

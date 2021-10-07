@@ -2,7 +2,6 @@ finish what i started
 cull notes
 release
 
-port number field input
 password field
 UI spacing
 
