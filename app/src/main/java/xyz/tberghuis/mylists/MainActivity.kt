@@ -7,7 +7,6 @@ import androidx.compose.runtime.*
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-//import androidx.navigation.compose.navArgument
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import dagger.hilt.android.AndroidEntryPoint
@@ -23,9 +22,9 @@ class MainActivity : ComponentActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     setContent {
-      MyApp()
-//      BackupDbSandbox()
-//      MenuSandbox()
+      MyListsTheme {
+        MyApp()
+      }
     }
   }
 }
@@ -33,25 +32,23 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp() {
   val navController = rememberNavController()
-  MyListsTheme {
-    NavHost(navController = navController, startDestination = "home") {
-      // todo use hilt or CompositionLocal to avoid props drilling
-      // todo refactor screen and viewmodel names to match with sqlite...
-      composable("home") { HomeScreen(navController) }
-      composable("backup") { BackupScreen() }
-      composable("add-list") { AddListScreen(navController = navController) }
-      composable(
-        "list/{mylistId}",
-        arguments = listOf(
-          navArgument("mylistId") { type = NavType.IntType },
-        )
-      ) { backStackEntry ->
-        val mylistId: Int = backStackEntry.arguments?.getInt("mylistId")!!
-        ListScreen(
-          navController = navController,
-          mylistId = mylistId
-        )
-      }
+  NavHost(navController = navController, startDestination = "home") {
+    // todo use hilt or CompositionLocal to avoid props drilling
+    // todo refactor screen and viewmodel names to match with sqlite...
+    composable("home") { HomeScreen(navController) }
+    composable("backup") { BackupScreen() }
+    composable("add-list") { AddListScreen(navController = navController) }
+    composable(
+      "list/{mylistId}",
+      arguments = listOf(
+        navArgument("mylistId") { type = NavType.IntType },
+      )
+    ) { backStackEntry ->
+      val mylistId: Int = backStackEntry.arguments?.getInt("mylistId")!!
+      ListScreen(
+        navController = navController,
+        mylistId = mylistId
+      )
     }
   }
 }
