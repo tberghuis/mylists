@@ -1,3 +1,4 @@
-update grade versions
 
-drag and drop demo
+migration script
+when delete item, decrement order_index of items that came after
+

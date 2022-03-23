@@ -14,6 +14,7 @@ import xyz.tberghuis.mylists.screens.AddListScreen
 import xyz.tberghuis.mylists.screens.BackupScreen
 import xyz.tberghuis.mylists.screens.HomeScreen
 import xyz.tberghuis.mylists.screens.ListScreen
+import xyz.tberghuis.mylists.tmp.DragNDropDemo
 import xyz.tberghuis.mylists.ui.theme.MyListsTheme
 
 @AndroidEntryPoint
@@ -23,7 +24,8 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     setContent {
       MyListsTheme {
-        MyApp()
+//        MyApp()
+        DragNDropDemo()
       }
     }
   }
