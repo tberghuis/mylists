@@ -18,8 +18,8 @@ data class ItemDemo(
 @Dao
 interface ItemDemoDao {
 
-  @Query("SELECT * FROM item_demo WHERE item_id = :itemId ORDER BY item_order")
-  fun getAll(itemId: Int): Flow<List<ItemDemo>>
+  @Query("SELECT * FROM item_demo ORDER BY item_order")
+  fun getAll(): Flow<List<ItemDemo>>
 
   @Insert
   suspend fun insertAll(vararg items: ItemDemo)
