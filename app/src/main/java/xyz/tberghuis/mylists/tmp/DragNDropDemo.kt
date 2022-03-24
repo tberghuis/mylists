@@ -12,11 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.*
 import javax.inject.Inject
 
-
+@HiltViewModel
 class DemoViewModel @Inject constructor(
   val itemDemoDao: ItemDemoDao
 ) : ViewModel() {
@@ -39,7 +40,7 @@ class DemoViewModel @Inject constructor(
 
 @Composable
 fun DragNDropDemo() {
-  ReorderableList()
+  RenderItemDemoList()
 }
 
 @Composable
@@ -48,11 +49,12 @@ fun RenderItemDemoList() {
   val items = vm.itemDemoDao.getAll().collectAsState(initial = listOf())
 
   // todo lazycolumn
-
+  LazyColumn {
+    items(items.value) {
+      Text(it.itemText)
+    }
+  }
 }
-
-
-
 
 
 @Composable
