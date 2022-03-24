@@ -8,3 +8,9 @@ https://www.youtube.com/watch?v=jVL6Ze46III
 https://github.com/MakeItEasyDev/Jetpack-Compose-Drag-And-Drop-List-Item
 
 https://stackoverflow.com/questions/64913067/reorder-lazycolumn-items-with-drag-drop
+
+
+#############
+demo table
+sql insert demo data
+get it to run
