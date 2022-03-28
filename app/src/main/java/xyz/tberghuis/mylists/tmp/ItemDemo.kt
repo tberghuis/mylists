@@ -27,6 +27,12 @@ interface ItemDemoDao {
   @Delete
   suspend fun delete(vararg items: ItemDemo)
 
+
+
+  @Query("delete from item_demo")
+  suspend fun deleteAll()
+
+
 //  @Query("UPDATE myitem set myitem_text = :myitemText WHERE myitem_id = :myitemId")
 //  suspend fun updateMyitemText(myitemText: String, myitemId: Int)
 }
