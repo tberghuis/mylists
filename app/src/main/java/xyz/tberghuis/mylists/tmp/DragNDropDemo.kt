@@ -24,6 +24,8 @@ import org.burnoutcrew.reorderable.*
 import xyz.tberghuis.mylists.util.logd
 import javax.inject.Inject
 import kotlinx.coroutines.flow.collect
+import kotlin.math.max
+import kotlin.math.min
 
 
 @HiltViewModel
@@ -109,7 +111,7 @@ fun RenderItemDemoList() {
         // fire event order changed
       },
       onDragEnd = { startIndex: Int, endIndex: Int ->
-        onDragEnd(startIndex, endIndex, vm)
+        onDragEnd(orderableList, startIndex, endIndex, vm)
       }
     )
   ) {
@@ -147,11 +149,22 @@ fun RenderItemDemoList() {
 
 }
 
-fun onDragEnd(startIndex: Int, endIndex: Int, demoViewModel: DemoViewModel) {
+fun onDragEnd(
+  itemDemoList: List<ItemDemo>,
+  startIndex: Int,
+  endIndex: Int,
+  demoViewModel: DemoViewModel
+) {
   logd("onDragEnd startIndex $startIndex endIndex $endIndex")
 
   if (startIndex == endIndex) {
     return
+  }
+
+  // is there a more elegant way???
+  for (i in min(startIndex, endIndex)..max(startIndex, endIndex)) {
+    // doitwrong, should do at once * flatten list to vararg
+    demoViewModel.update(itemDemoList[i].copy(itemOrder = i))
   }
 
   // lets do a hardcode...
