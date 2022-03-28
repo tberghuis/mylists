@@ -14,3 +14,10 @@ https://stackoverflow.com/questions/64913067/reorder-lazycolumn-items-with-drag-
 demo table
 sql insert demo data
 get it to run
+
+create migration script
+modify delete listitem function to update item_order
+
+remove traces of demo.db in sql json
+
+play store release
