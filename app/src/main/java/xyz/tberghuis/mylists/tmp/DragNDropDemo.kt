@@ -1,5 +1,6 @@
 package xyz.tberghuis.mylists.tmp
 
+import android.os.Parcelable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -8,6 +9,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.listSaver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -50,6 +55,27 @@ fun DragNDropDemo() {
 //  ReorderableList()
 }
 
+//fun <T> stateSaver() = Saver<MutableState<T>, Any>(
+//    save = { state -> state.value ?: "null" },
+//    restore = { value ->
+//        @Suppress("UNCHECKED_CAST")
+//        mutableStateOf((if (value == "null") null else value) as T)
+//    }
+//)
+
+@Composable
+fun <T: Parcelable> rememberMutableStateListOf(vararg elements: T): SnapshotStateList<T> {
+    return rememberSaveable(
+        saver = listSaver(
+            save = { it.toList() },
+            restore = { it.toMutableStateList() }
+        )
+    ) {
+        elements.toList().toMutableStateList()
+    }
+}
+
+
 @Composable
 fun RenderItemDemoList() {
   val vm: DemoViewModel = hiltViewModel()
@@ -57,17 +83,20 @@ fun RenderItemDemoList() {
 
   val state = rememberReorderState()
 
-  val orderableList = remember {
-    listOf<ItemDemo>().toMutableStateList()
+//  val orderableList = remember {
+//    listOf<ItemDemo>().toMutableStateList()
+//
+////    mutableStateListOf()
+//  }
 
-//    mutableStateListOf()
-  }
+val orderableList = rememberMutableStateListOf<ItemDemo>()
+
 
   LazyColumn(
     state = state.listState,
     modifier = Modifier.reorderable(state, { from, to -> orderableList.move(from.index, to.index) })
   ) {
-    items(orderableList) { item ->
+    items(orderableList, { it }) { item ->
       Card(
         elevation = 2.dp,
         modifier = Modifier
