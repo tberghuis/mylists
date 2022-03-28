@@ -102,18 +102,24 @@ fun RenderItemDemoList() {
 
   LazyColumn(
     state = state.listState,
-    modifier = Modifier.reorderable(state, { from, to ->
+    modifier = Modifier.reorderable(
+      state, { from, to ->
 //      move(orderableList, from.index, to.index, vm::update)
-      orderableList.move(from.index, to.index)
-    })
+        orderableList.move(from.index, to.index)
+        // fire event order changed
+      },
+      onDragEnd = { startIndex: Int, endIndex: Int ->
+        onDragEnd(startIndex, endIndex, vm)
+      }
+    )
   ) {
-    items(orderableList, { it }) { item ->
+    items(orderableList, { it.itemId }) { item ->
       Card(
         elevation = 2.dp,
         modifier = Modifier
           .padding(10.dp)
           .fillMaxWidth()
-          .draggedItem(state.offsetByKey(item))
+          .draggedItem(state.offsetByKey(item.itemId))
           .detectReorderAfterLongPress(state)
       ) {
 
@@ -131,15 +137,32 @@ fun RenderItemDemoList() {
     }
   }
 
-  LaunchedEffect(Unit) {
-    snapshotFlow { orderableList.toList() }
-      .collect {
-        logd("orderableList $orderableList")
-      }
-  }
+//  LaunchedEffect(Unit) {
+//    snapshotFlow { orderableList.toList() }
+//      .collect {
+//        logd("orderableList $orderableList")
+//      }
+//  }
 
 
 }
+
+fun onDragEnd(startIndex: Int, endIndex: Int, demoViewModel: DemoViewModel) {
+  logd("onDragEnd startIndex $startIndex endIndex $endIndex")
+
+  if (startIndex == endIndex) {
+    return
+  }
+
+  // lets do a hardcode...
+  // item 1 to the bottom
+//  val item1 = ItemDemo(itemText = "item 1", itemOrder = 2)
+//  val item2 = ItemDemo(itemText = "item 2", itemOrder = 0)
+//  val item3 = ItemDemo(itemText = "item 3", itemOrder = 1)
+//
+//  demoViewModel
+}
+
 
 fun move(
   list: MutableList<ItemDemo>,
