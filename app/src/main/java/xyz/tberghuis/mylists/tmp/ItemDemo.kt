@@ -17,7 +17,7 @@ data class ItemDemo(
   val itemId: Int = 0,
   @NonNull @ColumnInfo(name = "item_text") val itemText: String,
   @NonNull @ColumnInfo(name = "item_order") val itemOrder: Int
-): Parcelable
+) : Parcelable
 
 @Dao
 interface ItemDemoDao {
@@ -31,12 +31,10 @@ interface ItemDemoDao {
   @Delete
   suspend fun delete(vararg items: ItemDemo)
 
-
-
   @Query("delete from item_demo")
   suspend fun deleteAll()
 
+  @Update
+  suspend fun update(vararg items: ItemDemo)
 
-//  @Query("UPDATE myitem set myitem_text = :myitemText WHERE myitem_id = :myitemId")
-//  suspend fun updateMyitemText(myitemText: String, myitemId: Int)
 }

@@ -25,6 +25,7 @@ import xyz.tberghuis.mylists.util.logd
 import javax.inject.Inject
 import kotlinx.coroutines.flow.collect
 
+
 @HiltViewModel
 class DemoViewModel @Inject constructor(
   val itemDemoDao: ItemDemoDao
@@ -43,6 +44,13 @@ class DemoViewModel @Inject constructor(
       itemDemoDao.deleteAll()
 
       itemDemoDao.insertAll(item1, item2, item3)
+    }
+  }
+
+  // doitwrong, should use vararg or list and update in a transaction
+  fun update(itemDemo: ItemDemo) {
+    viewModelScope.launch {
+      itemDemoDao.update(itemDemo)
     }
   }
 }
@@ -64,15 +72,15 @@ fun DragNDropDemo() {
 //)
 
 @Composable
-fun <T: Parcelable> rememberMutableStateListOf(vararg elements: T): SnapshotStateList<T> {
-    return rememberSaveable(
-        saver = listSaver(
-            save = { it.toList() },
-            restore = { it.toMutableStateList() }
-        )
-    ) {
-        elements.toList().toMutableStateList()
-    }
+fun <T : Parcelable> rememberMutableStateListOf(vararg elements: T): SnapshotStateList<T> {
+  return rememberSaveable(
+    saver = listSaver(
+      save = { it.toList() },
+      restore = { it.toMutableStateList() }
+    )
+  ) {
+    elements.toList().toMutableStateList()
+  }
 }
 
 
@@ -89,12 +97,15 @@ fun RenderItemDemoList() {
 ////    mutableStateListOf()
 //  }
 
-val orderableList = rememberMutableStateListOf<ItemDemo>()
+  val orderableList = rememberMutableStateListOf<ItemDemo>()
 
 
   LazyColumn(
     state = state.listState,
-    modifier = Modifier.reorderable(state, { from, to -> orderableList.move(from.index, to.index) })
+    modifier = Modifier.reorderable(state, { from, to ->
+//      move(orderableList, from.index, to.index, vm::update)
+      orderableList.move(from.index, to.index)
+    })
   ) {
     items(orderableList, { it }) { item ->
       Card(
@@ -106,7 +117,7 @@ val orderableList = rememberMutableStateListOf<ItemDemo>()
           .detectReorderAfterLongPress(state)
       ) {
 
-        Text(item.itemText)
+        Text("${item.itemText} order ${item.itemOrder}")
       }
 
     }
@@ -120,11 +131,49 @@ val orderableList = rememberMutableStateListOf<ItemDemo>()
     }
   }
 
+  LaunchedEffect(Unit) {
+    snapshotFlow { orderableList.toList() }
+      .collect {
+        logd("orderableList $orderableList")
+      }
+  }
+
+
 }
 
-//fun move(fromIdx: Int, toIdx: Int) {
-//  logd("fromIdx $fromIdx toIdx $toIdx")
-//}
+fun move(
+  list: MutableList<ItemDemo>,
+  fromIdx: Int,
+  toIdx: Int,
+  update: (itemDemo: ItemDemo) -> Unit
+) {
+  logd("fromIdx ${fromIdx} toIdx ${toIdx}")
+
+  if (fromIdx == toIdx) {
+    return
+  }
+  // doitwrong
+  // should run updates as a transaction
+
+  // i do really want to update all changed at once
+
+  update(list[fromIdx].copy(itemOrder = toIdx))
+
+  when {
+    toIdx > fromIdx -> {
+      for (i in fromIdx + 1..toIdx) {
+        update(list[i].copy(itemOrder = list[i].itemOrder - 1))
+      }
+    }
+    else -> {
+      // todo
+//      for (i in fromIdx downTo toIdx + 1) {
+//
+//      }
+    }
+  }
+
+}
 
 
 @Composable
