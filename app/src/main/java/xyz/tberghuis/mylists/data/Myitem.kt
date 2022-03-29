@@ -24,5 +24,6 @@ data class Myitem(
   @ColumnInfo(name = "myitem_id")
   val myitemId: Int = 0,
   @ColumnInfo(name = "mylist_id", index = true) val mylistId: Int,
-  @NonNull @ColumnInfo(name = "myitem_text") val myitemText: String
+  @NonNull @ColumnInfo(name = "myitem_text") val myitemText: String,
+//  @NonNull @ColumnInfo(name = "myitem_order") val myitemOrder: Int,
 )

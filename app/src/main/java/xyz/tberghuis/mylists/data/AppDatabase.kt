@@ -20,9 +20,10 @@ abstract class AppDatabase : RoomDatabase() {
 val MIGRATION_1_2 = object : Migration(1, 2) {
   override fun migrate(database: SupportSQLiteDatabase) {
     logd("running migration willitblend")
-//
-//    database.execSQL("CREATE TABLE `Fruit` (`id` INTEGER, `name` TEXT, " +
-//      "PRIMARY KEY(`id`))")
+
+    // todo alter table add myitem_order column
+    // can i run sql update statements here???
+    // test
   }
 }
 
