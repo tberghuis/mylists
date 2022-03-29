@@ -24,8 +24,8 @@ class MainActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     setContent {
       MyListsTheme {
-//        MyApp()
-        DragNDropDemo()
+        MyApp()
+//        DragNDropDemo()
       }
     }
   }

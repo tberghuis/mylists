@@ -1,0 +1,100 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 2,
+    "identityHash": "e4964b71166b6f964375fe94ce2ece72",
+    "entities": [
+      {
+        "tableName": "mylist",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`mylist_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `mylist_text` TEXT NOT NULL, `myitem_draft_text` TEXT NOT NULL)",
+        "fields": [
+          {
+            "fieldPath": "mylistId",
+            "columnName": "mylist_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mylistText",
+            "columnName": "mylist_text",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "myitemDraftText",
+            "columnName": "myitem_draft_text",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "mylist_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "myitem",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`myitem_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `mylist_id` INTEGER NOT NULL, `myitem_text` TEXT NOT NULL, FOREIGN KEY(`mylist_id`) REFERENCES `mylist`(`mylist_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "fields": [
+          {
+            "fieldPath": "myitemId",
+            "columnName": "myitem_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "mylistId",
+            "columnName": "mylist_id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "myitemText",
+            "columnName": "myitem_text",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "myitem_id"
+          ],
+          "autoGenerate": true
+        },
+        "indices": [
+          {
+            "name": "index_myitem_mylist_id",
+            "unique": false,
+            "columnNames": [
+              "mylist_id"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_myitem_mylist_id` ON `${TABLE_NAME}` (`mylist_id`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "mylist",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "mylist_id"
+            ],
+            "referencedColumns": [
+              "mylist_id"
+            ]
+          }
+        ]
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e4964b71166b6f964375fe94ce2ece72')"
+    ]
+  }
+}

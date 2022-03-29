@@ -70,7 +70,7 @@ fun <T : Parcelable> rememberMutableStateListOf(vararg elements: T): SnapshotSta
 
 @Composable
 fun RenderItemDemoList() {
-  
+
 // does not work
 //  val vm: DemoViewModel = hiltViewModel()
 //  val itemList = vm.itemDemoDao.getAll().collectAsState(initial = listOf())
