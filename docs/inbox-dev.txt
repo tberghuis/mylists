@@ -17,7 +17,7 @@ get it to run
 
 create migration script
 https://developer.android.com/training/data-storage/room/migrating-db-versions
-modify delete listitem function to update item_order
+modify delete listitem function to update item_order, single transaction, doitwrong first
 
 remove traces of demo.db in sql json
 
