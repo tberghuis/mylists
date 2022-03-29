@@ -1,3 +1,5 @@
+# android studio - app inspection - export as file
+
 PRAGMA foreign_keys=OFF;
 BEGIN TRANSACTION;
 CREATE TABLE android_metadata (locale TEXT);

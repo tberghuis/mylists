@@ -7,7 +7,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import xyz.tberghuis.mylists.util.logd
 
 @Database(
-  entities = [Mylist::class, Myitem::class], version = 1, exportSchema = true,
+  entities = [Mylist::class, Myitem::class], version = 2, exportSchema = true,
   autoMigrations = [
 //    AutoMigration(from = 1, to = 2)
   ]
