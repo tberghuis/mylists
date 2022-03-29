@@ -70,6 +70,12 @@ fun <T : Parcelable> rememberMutableStateListOf(vararg elements: T): SnapshotSta
 
 @Composable
 fun RenderItemDemoList() {
+  
+// does not work
+//  val vm: DemoViewModel = hiltViewModel()
+//  val itemList = vm.itemDemoDao.getAll().collectAsState(initial = listOf())
+//  RenderLazyColumn(itemList.value)
+
   val vm: DemoViewModel = hiltViewModel()
   val state = rememberReorderState()
   val orderableList = rememberMutableStateListOf<ItemDemo>()
@@ -106,6 +112,38 @@ fun RenderItemDemoList() {
     }
   }
 }
+
+//@Composable
+//fun RenderLazyColumn(itemList: List<ItemDemo>) {
+//  val vm: DemoViewModel = hiltViewModel()
+//  val state = rememberReorderState()
+//  val orderableList = itemList.toMutableStateList()
+//
+//  LazyColumn(
+//    state = state.listState,
+//    modifier = Modifier.reorderable(
+//      state, { from, to ->
+//        orderableList.move(from.index, to.index)
+//      },
+//      onDragEnd = { startIndex: Int, endIndex: Int ->
+//        onDragEnd(orderableList, startIndex, endIndex, vm)
+//      }
+//    )
+//  ) {
+//    items(orderableList, { it.itemId }) { item ->
+//      Card(
+//        elevation = 2.dp,
+//        modifier = Modifier
+//          .padding(10.dp)
+//          .fillMaxWidth()
+//          .draggedItem(state.offsetByKey(item.itemId))
+//          .detectReorderAfterLongPress(state)
+//      ) {
+//        Text("${item.itemText} order ${item.itemOrder}")
+//      }
+//    }
+//  }
+//}
 
 fun onDragEnd(
   itemDemoList: List<ItemDemo>,
