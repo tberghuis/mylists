@@ -22,3 +22,6 @@ modify delete listitem function to update item_order, single transaction, doitwr
 remove traces of demo.db in sql json
 
 play store release
+
+
+next task FAB for adding item to list

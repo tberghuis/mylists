@@ -15,6 +15,9 @@ interface MyitemDao {
   @Insert
   suspend fun insertAll(vararg myitem: Myitem)
 
+  @Query("SELECT max(myitem_order) FROM myitem where mylist_id = :mylistId")
+  fun getMaxOrder(mylistId: Int): Int?
+
   @Delete
   suspend fun delete(vararg myitem: Myitem)
 

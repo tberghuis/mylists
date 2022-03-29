@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 2,
-    "identityHash": "e4964b71166b6f964375fe94ce2ece72",
+    "identityHash": "ce58f0032b4b60dd5a86800c7f9cbe9a",
     "entities": [
       {
         "tableName": "mylist",
@@ -38,7 +38,7 @@
       },
       {
         "tableName": "myitem",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`myitem_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `mylist_id` INTEGER NOT NULL, `myitem_text` TEXT NOT NULL, FOREIGN KEY(`mylist_id`) REFERENCES `mylist`(`mylist_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`myitem_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `mylist_id` INTEGER NOT NULL, `myitem_text` TEXT NOT NULL, `myitem_order` INTEGER NOT NULL, FOREIGN KEY(`mylist_id`) REFERENCES `mylist`(`mylist_id`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "myitemId",
@@ -56,6 +56,12 @@
             "fieldPath": "myitemText",
             "columnName": "myitem_text",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "myitemOrder",
+            "columnName": "myitem_order",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -94,7 +100,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e4964b71166b6f964375fe94ce2ece72')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ce58f0032b4b60dd5a86800c7f9cbe9a')"
     ]
   }
 }
