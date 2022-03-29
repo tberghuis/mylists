@@ -35,6 +35,7 @@ fun MigrationScreen() {
 fun openDb() {
   val dbpath = "/data/data/xyz.tberghuis.mylists/databases/bak.mylists.db"
   val db = SQLiteDatabase.openDatabase(dbpath, null, SQLiteDatabase.OPEN_READWRITE)
-  val result = db.rawQuery("select * from mylist", null)
+//  val result = db.rawQuery("select * from mylist", null)
+  val result = db.execSQL("ALTER TABLE myitem ADD COLUMN myitem_order integer default 0 not null")
   logd("result $result")
 }

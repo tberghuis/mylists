@@ -25,3 +25,6 @@ play store release
 
 
 next task FAB for adding item to list
+
+
+sqlite commit????

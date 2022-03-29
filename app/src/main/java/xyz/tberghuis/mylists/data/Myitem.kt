@@ -25,5 +25,6 @@ data class Myitem(
   val myitemId: Int = 0,
   @ColumnInfo(name = "mylist_id", index = true) val mylistId: Int,
   @NonNull @ColumnInfo(name = "myitem_text") val myitemText: String,
+  // Int? ???
   @NonNull @ColumnInfo(name = "myitem_order") val myitemOrder: Int,
 )
