@@ -7,10 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import xyz.tberghuis.mylists.data.AppDatabase
-import xyz.tberghuis.mylists.data.MIGRATION_1_2
-import xyz.tberghuis.mylists.data.MyitemDao
-import xyz.tberghuis.mylists.data.MylistDao
+import xyz.tberghuis.mylists.data.*
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -35,7 +32,7 @@ object DatabaseModule {
       AppDatabase::class.java,
       "mylists.db"
     )
-      .addMigrations(MIGRATION_1_2)
+      .addMigrations(MIGRATION_1_2, MIGRATION_2_1)
       .build()
   }
 }
