@@ -9,16 +9,16 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MyitemDao {
 
-  @Query("SELECT * FROM myitem WHERE mylist_id = :mylistId ORDER BY myitem_order")
-  fun getAll(mylistId: Int): Flow<List<Myitem>>
-//  @Query("SELECT * FROM myitem WHERE mylist_id = :mylistId ORDER BY myitem_id DESC")
+//  @Query("SELECT * FROM myitem WHERE mylist_id = :mylistId ORDER BY myitem_order")
 //  fun getAll(mylistId: Int): Flow<List<Myitem>>
+  @Query("SELECT * FROM myitem WHERE mylist_id = :mylistId ORDER BY myitem_id DESC")
+  fun getAll(mylistId: Int): Flow<List<Myitem>>
 
   @Insert
   suspend fun insertAll(vararg myitem: Myitem)
 
-  @Query("SELECT max(myitem_order) FROM myitem where mylist_id = :mylistId")
-  fun getMaxOrder(mylistId: Int): Int?
+//  @Query("SELECT max(myitem_order) FROM myitem where mylist_id = :mylistId")
+//  fun getMaxOrder(mylistId: Int): Int?
 
   @Delete
   suspend fun delete(vararg myitem: Myitem)
