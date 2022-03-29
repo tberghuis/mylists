@@ -7,7 +7,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import xyz.tberghuis.mylists.util.logd
 
 @Database(
-  entities = [Mylist::class, Myitem::class], version = 2, exportSchema = true,
+  entities = [Mylist::class, Myitem::class], version = 1, exportSchema = true,
   autoMigrations = [
 //    AutoMigration(from = 1, to = 2)
   ]
@@ -24,6 +24,9 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
     // todo alter table add myitem_order column
     // can i run sql update statements here???
     // test
+
+    database.execSQL("ALTER TABLE myitem ADD COLUMN myitem_order integer not null")
+//    database.execSQL("INSERT INTO myitem VALUES(1,1,'li',0)")
   }
 }
 
