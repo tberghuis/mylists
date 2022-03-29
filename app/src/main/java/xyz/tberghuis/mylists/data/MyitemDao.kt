@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface MyitemDao {
 
-  @Query("SELECT * FROM myitem WHERE mylist_id = :mylistId ORDER BY myitem_id DESC")
+  @Query("SELECT * FROM myitem WHERE mylist_id = :mylistId ORDER BY myitem_order")
   fun getAll(mylistId: Int): Flow<List<Myitem>>
 
   @Insert
