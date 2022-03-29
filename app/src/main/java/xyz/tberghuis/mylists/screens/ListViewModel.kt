@@ -54,11 +54,11 @@ class ListViewModel @Inject constructor(
       viewModelScope.launch(Dispatchers.IO) {
 
         // todo test null
-        val maxOrder = myitemDao.getMaxOrder(mylistId) ?: -1
+//        val maxOrder = myitemDao.getMaxOrder(mylistId) ?: -1
         myitemDao.insertAll(
           Myitem(
             mylistId = mylistId, myitemText = itemText.trim(),
-            myitemOrder = maxOrder + 1
+//            myitemOrder = maxOrder + 1
           )
         )
         mylistDao.updateMyitemDraftText(mylistId = mylistId, myitemDraftText = "")
