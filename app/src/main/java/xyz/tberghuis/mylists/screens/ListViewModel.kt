@@ -89,7 +89,11 @@ class ListViewModel @Inject constructor(
 
   fun deleteMyitem() {
     viewModelScope.launch {
-      myitemDao.delete(confirmDeleteMyitemDialog!!)
+      val myitem = confirmDeleteMyitemDialog!!
+      // decrement where order is >
+      // should i do in transaction???
+      myitemDao.decrementOrder(myitem.mylistId, myitem.myitemOrder)
+      myitemDao.delete(myitem)
       confirmDeleteMyitemDialog = null
     }
   }

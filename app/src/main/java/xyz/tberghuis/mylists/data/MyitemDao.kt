@@ -17,6 +17,9 @@ interface MyitemDao {
   @Query("SELECT max(myitem_order) FROM myitem where mylist_id = :mylistId")
   fun getMaxOrder(mylistId: Int): Int?
 
+  @Query("update myitem set myitem_order = myitem_order - 1 where mylist_id = :mylistId and myitem_order > :order")
+  suspend fun decrementOrder(mylistId: Int, order: Int)
+
   @Delete
   suspend fun delete(vararg myitem: Myitem)
 
