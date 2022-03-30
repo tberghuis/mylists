@@ -3,3 +3,4 @@ import warning dialog
 #########################################
 
 
+to get a fresh db for version run the sql in emulator sqlite3 after `rm *`
