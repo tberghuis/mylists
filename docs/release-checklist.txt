@@ -1,8 +1,12 @@
-remove Log.d and println statements
-update version app gradle
-test db migrations
-tag release github, attach aab
-
-[optional]
-edit play store description
-edit github readme
+update version build gradle
+release build
+release internal test
+test
+test migrations
+production rollout
+git merge branch
+switch branch to master, fetch
+update github README, play store listing
+cull inbox*.txt
+close update github issues
+*refactor
