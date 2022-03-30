@@ -39,7 +39,7 @@ class ListViewModel @Inject constructor(
 
   var editMyitemDialog by mutableStateOf<Myitem?>(null)
 
-  fun getMyitemDraftTextFlow(mylistId: Int): Flow<String> {
+  fun getMyitemDraftTextFlow(mylistId: Int): Flow<String?> {
     return mylistDao.myitemDraftTextFlow(mylistId)
   }
 

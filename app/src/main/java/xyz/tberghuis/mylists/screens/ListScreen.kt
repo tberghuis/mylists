@@ -149,7 +149,7 @@ fun DraftTextEntry(
 ) {
   val draftTextFieldState = viewModel.getMyitemDraftTextFlow(mylistId).collectAsState(initial = "")
   val addListItem: () -> Unit = {
-    viewModel.addListItem(mylistId, draftTextFieldState.value)
+    draftTextFieldState.value?.let { viewModel.addListItem(mylistId, it) }
   }
 
   // flow returns a null value when mylist deleted
@@ -162,7 +162,7 @@ fun DraftTextEntry(
         .fillMaxWidth(),
     ) {
       TextField(
-        value = draftTextFieldState.value,
+        value = draftTextFieldState.value!!,
         onValueChange = {
           viewModel.updateMylistDraftText(mylistId = mylistId, draftText = it)
         },
@@ -187,7 +187,7 @@ fun DraftTextEntry(
           }
       )
       Button(
-        enabled = draftTextFieldState.value.isNotBlank(),
+        enabled = draftTextFieldState.value!!.isNotBlank(),
         onClick = addListItem,
         modifier = Modifier.padding(start = 8.dp)
       ) {
