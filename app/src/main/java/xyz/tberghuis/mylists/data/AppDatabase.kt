@@ -65,14 +65,3 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
   }
 
 }
-
-// reset DB only used in dev
-val MIGRATION_2_1 = object : Migration(2, 1) {
-  override fun migrate(database: SupportSQLiteDatabase) {
-    logd("reset migration")
-//    database.beginTransaction()
-    database.execSQL("drop table myitem")
-    database.execSQL("CREATE TABLE `myitem` (`myitem_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `mylist_id` INTEGER NOT NULL, `myitem_text` TEXT NOT NULL, FOREIGN KEY(`mylist_id`) REFERENCES `mylist`(`mylist_id`) ON UPDATE CASCADE ON DELETE CASCADE )")
-    database.execSQL("CREATE INDEX `index_myitem_mylist_id` ON `myitem` (`mylist_id`)")
-  }
-}

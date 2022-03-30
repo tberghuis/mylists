@@ -1,21 +1,6 @@
 
-migration script
-when delete item, decrement order_index of items that came after
-
-https://github.com/aclassen/ComposeReorderable
-
-https://www.youtube.com/watch?v=jVL6Ze46III
-https://github.com/MakeItEasyDev/Jetpack-Compose-Drag-And-Drop-List-Item
-
-https://stackoverflow.com/questions/64913067/reorder-lazycolumn-items-with-drag-drop
-
-
 #############
-demo table
-sql insert demo data
-get it to run
 
-create migration script
 https://developer.android.com/training/data-storage/room/migrating-db-versions
 modify delete listitem function to update item_order, single transaction, doitwrong first
 

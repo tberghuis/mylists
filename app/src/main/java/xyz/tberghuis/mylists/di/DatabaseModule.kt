@@ -32,7 +32,7 @@ object DatabaseModule {
       AppDatabase::class.java,
       "mylists.db"
     )
-      .addMigrations(MIGRATION_1_2, MIGRATION_2_1)
+      .addMigrations(MIGRATION_1_2)
       .build()
   }
 }
