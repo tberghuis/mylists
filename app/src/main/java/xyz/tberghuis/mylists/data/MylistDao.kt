@@ -29,7 +29,7 @@ interface MylistDao {
   suspend fun updateMyitemDraftText(myitemDraftText: String, mylistId: Int)
 
   @Query("SELECT myitem_draft_text FROM mylist WHERE mylist_id = :mylistId")
-  fun myitemDraftTextFlow(mylistId: Int): Flow<String>
+  fun myitemDraftTextFlow(mylistId: Int): Flow<String?>
 
   @Insert
   suspend fun insertAll(vararg mylist: Mylist)

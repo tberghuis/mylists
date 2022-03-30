@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
@@ -38,7 +39,7 @@ class ListViewModel @Inject constructor(
 
   var editMyitemDialog by mutableStateOf<Myitem?>(null)
 
-  fun getMyitemDraftTextFlow(mylistId: Int): Flow<String> {
+  fun getMyitemDraftTextFlow(mylistId: Int): Flow<String?> {
     return mylistDao.myitemDraftTextFlow(mylistId)
   }
 
@@ -50,8 +51,16 @@ class ListViewModel @Inject constructor(
 
   fun addListItem(mylistId: Int, itemText: String) {
     if (itemText.isNotBlank()) {
-      viewModelScope.launch {
-        myitemDao.insertAll(Myitem(mylistId = mylistId, myitemText = itemText.trim()))
+      viewModelScope.launch(Dispatchers.IO) {
+
+        // todo test null
+        val maxOrder = myitemDao.getMaxOrder(mylistId) ?: -1
+        myitemDao.insertAll(
+          Myitem(
+            mylistId = mylistId, myitemText = itemText.trim(),
+            myitemOrder = maxOrder + 1
+          )
+        )
         mylistDao.updateMyitemDraftText(mylistId = mylistId, myitemDraftText = "")
       }
     }
@@ -80,7 +89,11 @@ class ListViewModel @Inject constructor(
 
   fun deleteMyitem() {
     viewModelScope.launch {
-      myitemDao.delete(confirmDeleteMyitemDialog!!)
+      val myitem = confirmDeleteMyitemDialog!!
+      // decrement where order is >
+      // should i do in transaction???
+      myitemDao.decrementOrder(myitem.mylistId, myitem.myitemOrder)
+      myitemDao.delete(myitem)
       confirmDeleteMyitemDialog = null
     }
   }
@@ -91,4 +104,12 @@ class ListViewModel @Inject constructor(
       confirmDeleteMylistDialog = null
     }
   }
+
+  // doitwrong
+  fun update(vararg myitems: Myitem) {
+    viewModelScope.launch {
+      myitemDao.update(*myitems)
+    }
+  }
+
 }

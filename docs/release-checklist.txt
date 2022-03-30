@@ -1,0 +1,12 @@
+update version build gradle
+release build
+release internal test
+test
+test migrations
+production rollout
+git merge branch
+switch branch to master, fetch
+update github README, play store listing
+cull inbox*.txt
+close update github issues
+*refactor

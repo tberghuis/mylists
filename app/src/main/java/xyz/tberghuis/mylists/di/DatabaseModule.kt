@@ -7,9 +7,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import xyz.tberghuis.mylists.data.AppDatabase
-import xyz.tberghuis.mylists.data.MyitemDao
-import xyz.tberghuis.mylists.data.MylistDao
+import xyz.tberghuis.mylists.data.*
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -21,14 +19,10 @@ object DatabaseModule {
     return database.myitemDao()
   }
 
-
   @Provides
   fun provideMylistDao(database: AppDatabase): MylistDao {
     return database.mylistDao()
   }
-
-
-
 
   @Provides
   @Singleton
@@ -37,7 +31,8 @@ object DatabaseModule {
       appContext,
       AppDatabase::class.java,
       "mylists.db"
-    ).build()
+    )
+      .addMigrations(MIGRATION_1_2)
+      .build()
   }
-
 }

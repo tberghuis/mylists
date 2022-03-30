@@ -1,0 +1,15 @@
+PRAGMA foreign_keys=OFF;
+BEGIN TRANSACTION;
+CREATE TABLE android_metadata (locale TEXT);
+INSERT INTO android_metadata VALUES('en_AU');
+CREATE TABLE `mylist` (`mylist_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `mylist_text` TEXT NOT NULL, `myitem_draft_text` TEXT NOT NULL);
+INSERT INTO mylist VALUES(1,'gg','');
+CREATE TABLE `myitem` (`myitem_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `mylist_id` INTEGER NOT NULL, `myitem_text` TEXT NOT NULL, `myitem_order` INTEGER NOT NULL, FOREIGN KEY(`mylist_id`) REFERENCES `mylist`(`mylist_id`) ON UPDATE CASCADE ON DELETE CASCADE );
+INSERT INTO myitem VALUES(1,1,'li',0);
+CREATE TABLE room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT);
+INSERT INTO room_master_table VALUES(42,'ce58f0032b4b60dd5a86800c7f9cbe9a');
+DELETE FROM sqlite_sequence;
+INSERT INTO sqlite_sequence VALUES('mylist',1);
+INSERT INTO sqlite_sequence VALUES('myitem',1);
+CREATE INDEX `index_myitem_mylist_id` ON `myitem` (`mylist_id`);
+COMMIT;
