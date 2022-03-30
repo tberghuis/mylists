@@ -1,9 +1,6 @@
 package xyz.tberghuis.mylists.data
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -25,4 +22,7 @@ interface MyitemDao {
 
   @Query("UPDATE myitem set myitem_text = :myitemText WHERE myitem_id = :myitemId")
   suspend fun updateMyitemText(myitemText: String, myitemId: Int)
+
+  @Update
+  suspend fun update(vararg myitems: Myitem)
 }

@@ -100,4 +100,12 @@ class ListViewModel @Inject constructor(
       confirmDeleteMylistDialog = null
     }
   }
+
+  // doitwrong
+  fun update(vararg myitems: Myitem) {
+    viewModelScope.launch {
+      myitemDao.update(*myitems)
+    }
+  }
+
 }

@@ -1,5 +1,6 @@
 package xyz.tberghuis.mylists.screens
 
+import android.os.Parcelable
 import android.view.KeyEvent
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,7 +14,9 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.onKeyEvent
@@ -22,6 +25,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import xyz.tberghuis.mylists.components.DeleteAlertDialog
 import xyz.tberghuis.mylists.data.Myitem
+import kotlinx.coroutines.flow.collect
+import org.burnoutcrew.reorderable.*
+import xyz.tberghuis.mylists.util.logd
+import kotlin.math.max
+import kotlin.math.min
 
 @Composable
 fun ListScreen(
@@ -29,44 +37,103 @@ fun ListScreen(
   navController: NavHostController,
   mylistId: Int
 ) {
-  val myitems: List<Myitem> by viewModel.getAllMyitems(mylistId)
-    .collectAsState(initial = listOf())
+//  val myitems: List<Myitem> by viewModel.getAllMyitems(mylistId)
+//    .collectAsState(initial = listOf())
 
   Scaffold(topBar = { ListScreenTopAppBar(viewModel, mylistId) }) {
     Column {
       DraftTextEntry(mylistId = mylistId)
-      LazyColumn(
-        contentPadding = PaddingValues(10.dp, 0.dp, 10.dp, 10.dp)
+      RenderMyitemList(viewModel, mylistId = mylistId)
+    }
+  }
+  ShowDialog(viewModel, navController, mylistId)
+}
+
+@Composable
+fun <T : Parcelable> rememberMutableStateListOf(vararg elements: T): SnapshotStateList<T> {
+  return rememberSaveable(
+    saver = listSaver(
+      save = { it.toList() },
+      restore = { it.toMutableStateList() }
+    )
+  ) {
+    elements.toList().toMutableStateList()
+  }
+}
+
+
+fun onDragEnd(
+  myitemList: List<Myitem>,
+  startIndex: Int,
+  endIndex: Int,
+  listViewModel: ListViewModel
+) {
+  logd("onDragEnd startIndex $startIndex endIndex $endIndex")
+  if (startIndex == endIndex) {
+    return
+  }
+  // is there a more elegant way???
+  val ml = mutableListOf<Myitem>()
+  for (i in min(startIndex, endIndex)..max(startIndex, endIndex)) {
+    ml.add(myitemList[i].copy(myitemOrder = i))
+  }
+  listViewModel.update(*ml.toTypedArray())
+}
+
+// bad function name... meh
+@Composable
+fun RenderMyitemList(viewModel: ListViewModel = hiltViewModel(), mylistId: Int) {
+  val state = rememberReorderState()
+  val myitemList = rememberMutableStateListOf<Myitem>()
+  LaunchedEffect(Unit) {
+    viewModel.getAllMyitems(mylistId).collect {
+      myitemList.clear()
+      myitemList.addAll(it)
+    }
+  }
+
+
+  LazyColumn(
+    contentPadding = PaddingValues(10.dp, 0.dp, 10.dp, 10.dp),
+    state = state.listState,
+    modifier = Modifier.reorderable(
+      state,
+      { from, to ->
+        myitemList.move(from.index, to.index)
+      },
+      onDragEnd = { startIndex: Int, endIndex: Int ->
+        onDragEnd(myitemList, startIndex, endIndex, viewModel)
+      },
+    )
+  ) {
+    items(items = myitemList, { it.myitemId }) { myitem ->
+      Card(
+        modifier = Modifier
+          .padding(top = 10.dp)
+          .draggedItem(state.offsetByKey(myitem.myitemId))
+          .detectReorderAfterLongPress(state),
+        elevation = 2.dp
       ) {
-        items(items = myitems) { myitem ->
-          Card(
-            modifier = Modifier
-              .padding(top = 10.dp),
-            elevation = 2.dp
-          ) {
-            Row(
-              modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 8.dp),
-              verticalAlignment = Alignment.CenterVertically
-            ) {
-              Text(
-                text = myitem.myitemText,
-                modifier = Modifier.weight(1f)
-              )
-              IconButton(onClick = { viewModel.editMyitemDialog = myitem }) {
-                Icon(Icons.Filled.Edit, contentDescription = "edit")
-              }
-              IconButton(onClick = { viewModel.confirmDeleteMyitemDialog = myitem }) {
-                Icon(Icons.Filled.Delete, contentDescription = "delete")
-              }
-            }
+        Row(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp),
+          verticalAlignment = Alignment.CenterVertically
+        ) {
+          Text(
+            text = myitem.myitemText,
+            modifier = Modifier.weight(1f)
+          )
+          IconButton(onClick = { viewModel.editMyitemDialog = myitem }) {
+            Icon(Icons.Filled.Edit, contentDescription = "edit")
+          }
+          IconButton(onClick = { viewModel.confirmDeleteMyitemDialog = myitem }) {
+            Icon(Icons.Filled.Delete, contentDescription = "delete")
           }
         }
       }
     }
   }
-  ShowDialog(viewModel, navController, mylistId)
 }
 
 
