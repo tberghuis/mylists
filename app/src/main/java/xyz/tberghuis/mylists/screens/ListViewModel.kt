@@ -36,7 +36,8 @@ class ListViewModel @Inject constructor(
   var confirmDeleteMyitemDialog by mutableStateOf<Myitem?>(null)
 
   // using nullable type to store state is probably anti-pattern
-  var confirmDeleteMylistDialog by mutableStateOf<Int?>(null)
+//  var confirmDeleteMylistDialog by mutableStateOf<Int?>(null)
+  var confirmDeleteMylistDialog by mutableStateOf<Boolean>(false)
 
   //
   var editMylistTitleDialog by mutableStateOf<String?>(null)
@@ -79,11 +80,11 @@ class ListViewModel @Inject constructor(
     }
   }
 
-  fun getAppBarTitle(mylistId: Int): LiveData<String> {
+  fun getAppBarTitle(): LiveData<String> {
     return mylistDao.getMylistText(mylistId)
   }
 
-  fun updateMylistTitle(mylistTitle: String, mylistId: Int) {
+  fun updateMylistTitle(mylistTitle: String) {
     // todo prevent blank mylistTitle
     viewModelScope.launch {
       mylistDao.updateMylistText(mylistTitle, mylistId)
@@ -96,8 +97,8 @@ class ListViewModel @Inject constructor(
     }
   }
 
-  fun getAllMyitems(listId: Int): Flow<List<Myitem>> {
-    return myitemDao.getAll(listId)
+  fun getAllMyitems(): Flow<List<Myitem>> {
+    return myitemDao.getAll(mylistId)
   }
 
   fun deleteMyitem() {
@@ -113,8 +114,8 @@ class ListViewModel @Inject constructor(
 
   fun deleteMylist() {
     viewModelScope.launch {
-      mylistDao.delete(confirmDeleteMylistDialog!!)
-      confirmDeleteMylistDialog = null
+      mylistDao.delete(mylistId)
+      confirmDeleteMylistDialog = false
     }
   }
 

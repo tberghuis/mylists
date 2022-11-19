@@ -32,18 +32,15 @@ import kotlin.math.min
 
 @Composable
 fun ListScreen(
-  viewModel: ListViewModel = hiltViewModel(), navController: NavHostController, mylistId: Int
+  viewModel: ListViewModel = hiltViewModel(), navController: NavHostController,
 ) {
-//  val myitems: List<Myitem> by viewModel.getAllMyitems(mylistId)
-//    .collectAsState(initial = listOf())
-
-  Scaffold(topBar = { ListScreenTopAppBar(viewModel, mylistId) }) { paddingValues ->
+  Scaffold(topBar = { ListScreenTopAppBar(viewModel) }) { paddingValues ->
     Column(Modifier.padding(paddingValues)) {
       DraftTextEntry()
-      RenderMyitemList(viewModel, mylistId = mylistId)
+      RenderMyitemList(viewModel)
     }
   }
-  ShowDialog(viewModel, navController, mylistId)
+  ShowDialog(viewModel, navController)
 }
 
 @Composable
@@ -74,11 +71,11 @@ fun onDragEnd(
 
 // bad function name... meh
 @Composable
-fun RenderMyitemList(viewModel: ListViewModel = hiltViewModel(), mylistId: Int) {
+fun RenderMyitemList(viewModel: ListViewModel = hiltViewModel()) {
   val state = rememberReorderState()
   val myitemList = rememberMutableStateListOf<Myitem>()
   LaunchedEffect(Unit) {
-    viewModel.getAllMyitems(mylistId).collect {
+    viewModel.getAllMyitems().collect {
       myitemList.clear()
       myitemList.addAll(it)
     }
@@ -186,7 +183,7 @@ fun DraftTextEntry(
 
 @Composable
 fun ShowDialog(
-  viewModel: ListViewModel, navController: NavHostController, mylistId: Int
+  viewModel: ListViewModel, navController: NavHostController,
 ) {
   when {
     viewModel.confirmDeleteMyitemDialog != null -> {
@@ -194,19 +191,19 @@ fun ShowDialog(
         viewModel.confirmDeleteMyitemDialog = null
       })
     }
-    viewModel.confirmDeleteMylistDialog != null -> {
+    viewModel.confirmDeleteMylistDialog -> {
       DeleteAlertDialog(onDelete = {
         // or do i navigateUp
         navController.popBackStack()
         // if I launch here would it prevent NPE
         viewModel.deleteMylist()
       }, onCancel = {
-        viewModel.confirmDeleteMylistDialog = null
+        viewModel.confirmDeleteMylistDialog = false
       })
     }
     viewModel.editMylistTitleDialog != null -> {
       EditDialog("Edit List Title", viewModel.editMylistTitleDialog!!, onUpdate = { newTitle ->
-        viewModel.updateMylistTitle(newTitle, mylistId)
+        viewModel.updateMylistTitle(newTitle)
         viewModel.editMylistTitleDialog = null
       }, onCancel = { viewModel.editMylistTitleDialog = null })
     }
@@ -250,10 +247,10 @@ fun EditDialog(
 
 @Composable
 fun ListScreenTopAppBar(
-  viewModel: ListViewModel = hiltViewModel(), mylistId: Int
+  viewModel: ListViewModel = hiltViewModel(),
 ) {
-  val appBarTitle: String by viewModel.getAppBarTitle(mylistId).observeAsState("")
-  val onDeleteClick = { viewModel.confirmDeleteMylistDialog = mylistId }
+  val appBarTitle: String by viewModel.getAppBarTitle().observeAsState("")
+  val onDeleteClick = { viewModel.confirmDeleteMylistDialog = true }
 
   // MVP edit button click will bring up dialog
   val onEditMylistTitleClick = {

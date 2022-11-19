@@ -48,10 +48,9 @@ fun MyApp() {
         navArgument("mylistId") { type = NavType.IntType },
       )
     ) { backStackEntry ->
-      val mylistId: Int = backStackEntry.arguments?.getInt("mylistId")!!
+//      val mylistId: Int = backStackEntry.arguments?.getInt("mylistId")!!
       ListScreen(
         navController = navController,
-        mylistId = mylistId
       )
     }
   }
