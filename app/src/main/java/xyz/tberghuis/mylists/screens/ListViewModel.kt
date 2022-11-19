@@ -4,6 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,12 +18,16 @@ import xyz.tberghuis.mylists.data.MyitemDao
 import xyz.tberghuis.mylists.data.MylistDao
 
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
+import xyz.tberghuis.mylists.util.logd
 
 
 // todo hilt inject mylistId????
 // would i be better off without hilt???
 @HiltViewModel
 class ListViewModel @Inject constructor(
+  savedStateHandle: SavedStateHandle,
   private val myitemDao: MyitemDao,
   private val mylistDao: MylistDao
 ) : ViewModel() {
@@ -39,29 +44,37 @@ class ListViewModel @Inject constructor(
 
   var editMyitemDialog by mutableStateOf<Myitem?>(null)
 
-  fun getMyitemDraftTextFlow(mylistId: Int): Flow<String?> {
-    return mylistDao.myitemDraftTextFlow(mylistId)
+  val mylistId = savedStateHandle.get<Int>("mylistId")!!
+  val draftTextFieldStateFlow = MutableStateFlow<String?>(null)
+
+  init {
+    viewModelScope.launch {
+      draftTextFieldStateFlow.value = mylistDao.myitemDraftTextFlow(mylistId).map {
+        it ?: ""
+      }.first()
+    }
   }
 
-  fun updateMylistDraftText(mylistId: Int, draftText: String) {
+  fun updateMylistDraftText(draftText: String) {
     viewModelScope.launch {
+
+      draftTextFieldStateFlow.value = draftText
       mylistDao.updateMyitemDraftText(mylistId = mylistId, myitemDraftText = draftText)
     }
   }
 
-  fun addListItem(mylistId: Int, itemText: String) {
+  fun addListItem(itemText: String) {
     if (itemText.isNotBlank()) {
       viewModelScope.launch(Dispatchers.IO) {
-
         // todo test null
         val maxOrder = myitemDao.getMaxOrder(mylistId) ?: -1
         myitemDao.insertAll(
           Myitem(
-            mylistId = mylistId, myitemText = itemText.trim(),
-            myitemOrder = maxOrder + 1
+            mylistId = mylistId, myitemText = itemText.trim(), myitemOrder = maxOrder + 1
           )
         )
         mylistDao.updateMyitemDraftText(mylistId = mylistId, myitemDraftText = "")
+        draftTextFieldStateFlow.value = ""
       }
     }
   }
