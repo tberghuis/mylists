@@ -21,39 +21,32 @@ import xyz.tberghuis.mylists.data.Mylist
 
 @Composable
 fun HomeScreen(
-  navHostController: NavHostController,
-  viewModel: HomeViewModel = hiltViewModel()
+  navHostController: NavHostController, viewModel: HomeViewModel = hiltViewModel()
 ) {
   // delegate by
-  val listNames: List<Mylist> by viewModel.getAllListNames()
-    .collectAsState(initial = listOf())
+  val listNames: List<Mylist> by viewModel.getAllListNames().collectAsState(initial = listOf())
 
-  Scaffold(
-    topBar = {
-      HomeTopAppBar(navHostController)
-    },
-    floatingActionButton = {
-      FloatingActionButton(onClick = {
-        navHostController.navigate("add-list")
-      }) {
-        Icon(Icons.Filled.Add, "add list")
-      }
+  Scaffold(topBar = {
+    HomeTopAppBar(navHostController)
+  }, floatingActionButton = {
+    FloatingActionButton(onClick = {
+      navHostController.navigate("add-list")
     }) {
-
+      Icon(Icons.Filled.Add, "add list")
+    }
+  }) { paddingValues ->
     LazyColumn(
+      modifier = Modifier.padding(paddingValues),
       contentPadding = PaddingValues(10.dp, 0.dp, 10.dp, 10.dp)
     ) {
       items(items = listNames) { listName ->
         val count: Int? by viewModel.getCount(listName.mylistId).observeAsState()
         val countString = count?.toString() ?: ""
-        Card(
-          elevation = 2.dp,
-          modifier = Modifier
-            .padding(top = 10.dp)
-            .clickable {
-              navHostController.navigate("list/${listName.mylistId}")
-            }
-        ) {
+        Card(elevation = 2.dp, modifier = Modifier
+          .padding(top = 10.dp)
+          .clickable {
+            navHostController.navigate("list/${listName.mylistId}")
+          }) {
           Row(
             modifier = Modifier
               .padding(8.dp)

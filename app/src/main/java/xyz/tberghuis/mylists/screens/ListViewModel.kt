@@ -4,25 +4,26 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import xyz.tberghuis.mylists.data.Myitem
 import xyz.tberghuis.mylists.data.MyitemDao
 import xyz.tberghuis.mylists.data.MylistDao
-
 import javax.inject.Inject
-
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 
 // todo hilt inject mylistId????
 // would i be better off without hilt???
 @HiltViewModel
 class ListViewModel @Inject constructor(
+  savedStateHandle: SavedStateHandle,
   private val myitemDao: MyitemDao,
   private val mylistDao: MylistDao
 ) : ViewModel() {
@@ -30,8 +31,7 @@ class ListViewModel @Inject constructor(
   // this by operator/delegate makes MutableState clever somehow
   var confirmDeleteMyitemDialog by mutableStateOf<Myitem?>(null)
 
-  // using nullable type to store state is probably anti-pattern
-  var confirmDeleteMylistDialog by mutableStateOf<Int?>(null)
+  var confirmDeleteMylistDialog by mutableStateOf(false)
 
   //
   var editMylistTitleDialog by mutableStateOf<String?>(null)
@@ -39,38 +39,46 @@ class ListViewModel @Inject constructor(
 
   var editMyitemDialog by mutableStateOf<Myitem?>(null)
 
-  fun getMyitemDraftTextFlow(mylistId: Int): Flow<String?> {
-    return mylistDao.myitemDraftTextFlow(mylistId)
+  val mylistId = savedStateHandle.get<Int>("mylistId")!!
+  val draftTextFieldStateFlow = MutableStateFlow<String?>(null)
+
+  init {
+    viewModelScope.launch {
+      draftTextFieldStateFlow.value = mylistDao.myitemDraftTextFlow(mylistId).map {
+        it ?: ""
+      }.first()
+    }
   }
 
-  fun updateMylistDraftText(mylistId: Int, draftText: String) {
+  fun updateMylistDraftText(draftText: String) {
     viewModelScope.launch {
+
+      draftTextFieldStateFlow.value = draftText
       mylistDao.updateMyitemDraftText(mylistId = mylistId, myitemDraftText = draftText)
     }
   }
 
-  fun addListItem(mylistId: Int, itemText: String) {
+  fun addListItem(itemText: String) {
     if (itemText.isNotBlank()) {
       viewModelScope.launch(Dispatchers.IO) {
-
         // todo test null
         val maxOrder = myitemDao.getMaxOrder(mylistId) ?: -1
         myitemDao.insertAll(
           Myitem(
-            mylistId = mylistId, myitemText = itemText.trim(),
-            myitemOrder = maxOrder + 1
+            mylistId = mylistId, myitemText = itemText.trim(), myitemOrder = maxOrder + 1
           )
         )
         mylistDao.updateMyitemDraftText(mylistId = mylistId, myitemDraftText = "")
+        draftTextFieldStateFlow.value = ""
       }
     }
   }
 
-  fun getAppBarTitle(mylistId: Int): LiveData<String> {
+  fun getAppBarTitle(): LiveData<String> {
     return mylistDao.getMylistText(mylistId)
   }
 
-  fun updateMylistTitle(mylistTitle: String, mylistId: Int) {
+  fun updateMylistTitle(mylistTitle: String) {
     // todo prevent blank mylistTitle
     viewModelScope.launch {
       mylistDao.updateMylistText(mylistTitle, mylistId)
@@ -83,8 +91,8 @@ class ListViewModel @Inject constructor(
     }
   }
 
-  fun getAllMyitems(listId: Int): Flow<List<Myitem>> {
-    return myitemDao.getAll(listId)
+  fun getAllMyitems(): Flow<List<Myitem>> {
+    return myitemDao.getAll(mylistId)
   }
 
   fun deleteMyitem() {
@@ -100,8 +108,8 @@ class ListViewModel @Inject constructor(
 
   fun deleteMylist() {
     viewModelScope.launch {
-      mylistDao.delete(confirmDeleteMylistDialog!!)
-      confirmDeleteMylistDialog = null
+      mylistDao.delete(mylistId)
+      confirmDeleteMylistDialog = false
     }
   }
 

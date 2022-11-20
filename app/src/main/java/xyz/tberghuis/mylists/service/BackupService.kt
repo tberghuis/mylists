@@ -46,7 +46,7 @@ class BackupService
     // this is probably bad programming
     // the correct way will come with time
     // my mantra... do it wrong
-    try {
+    return try {
       val channelWrapper = initSecureChannel(bs.user, bs.host, bs.port, bs.password)
       val dbPath = context.getDatabasePath("mylists.db").absolutePath
       // todo if path don't exist throw....
@@ -55,9 +55,9 @@ class BackupService
       channelWrapper.disconnect()
       val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm")
       val currentDate = sdf.format(Date())
-      return BackupResult("success", "", currentDate)
+      BackupResult("success", "", currentDate)
     } catch (e: Exception) {
-      return BackupResult("fail", e.message.toString(), "")
+      BackupResult("fail", e.message.toString(), "")
     }
   }
 }
