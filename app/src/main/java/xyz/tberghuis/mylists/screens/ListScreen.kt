@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -30,6 +30,7 @@ import xyz.tberghuis.mylists.util.logd
 import kotlin.math.max
 import kotlin.math.min
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListScreen(
   viewModel: ListViewModel = hiltViewModel(), navController: NavHostController,
@@ -100,7 +101,8 @@ fun RenderMyitemList(viewModel: ListViewModel = hiltViewModel()) {
         modifier = Modifier
           .padding(top = 10.dp)
           .draggedItem(state.offsetByKey(myitem.myitemId))
-          .detectReorderAfterLongPress(state), elevation = 2.dp
+          .detectReorderAfterLongPress(state),
+//        elevation = 2.dp
       ) {
         Row(
           modifier = Modifier
@@ -129,6 +131,7 @@ fun RenderMyitemList(viewModel: ListViewModel = hiltViewModel()) {
 // but this would be very unlikely
 // need to investigate how to DI mylistId into VM
 // i tried a state class but leaving that for an exercise for a fresh project
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DraftTextEntry(
   viewModel: ListViewModel = hiltViewModel(),
@@ -216,6 +219,7 @@ fun ShowDialog(
   }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EditDialog(
   dialogTitle: String,
@@ -259,6 +263,7 @@ fun ListScreenTopAppBar(
   ListScreenTopAppBarContent(appBarTitle, onEditMylistTitleClick, onDeleteClick)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListScreenTopAppBarContent(
   appBarTitle: String, onEditMylistTitleClick: () -> Unit, onDeleteClick: () -> Unit

@@ -4,7 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
@@ -19,6 +19,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import xyz.tberghuis.mylists.components.HomeTopAppBar
 import xyz.tberghuis.mylists.data.Mylist
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
   navHostController: NavHostController, viewModel: HomeViewModel = hiltViewModel()
@@ -42,7 +43,9 @@ fun HomeScreen(
       items(items = listNames) { listName ->
         val count: Int? by viewModel.getCount(listName.mylistId).observeAsState()
         val countString = count?.toString() ?: ""
-        Card(elevation = 2.dp, modifier = Modifier
+        Card(
+//          elevation = 2.dp,
+          modifier = Modifier
           .padding(top = 10.dp)
           .clickable {
             navHostController.navigate("list/${listName.mylistId}")

@@ -2,8 +2,8 @@ package xyz.tberghuis.mylists.tmp.migration
 
 import android.database.sqlite.SQLiteDatabase
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.Button
-import androidx.compose.material.Text
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.Dispatchers
