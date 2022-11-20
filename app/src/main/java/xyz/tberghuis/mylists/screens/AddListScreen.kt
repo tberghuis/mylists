@@ -32,19 +32,18 @@ fun AddListScreen(
     TopAppBar(
       title = { Text("Add List") },
     )
-  }) {
+  }) { paddingValues ->
 
 
     Column(
       modifier = Modifier
+        .padding(paddingValues)
         .fillMaxSize()
         .padding(16.dp),
       horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-      Row(
-
-      ) {
+      Row {
         TextField(
           value = viewModel.mylistTextField.value,
           singleLine = true,

@@ -34,9 +34,11 @@ fun BackupScreen(
       // TODO back/up home arrow
       title = { Text("Backup") }
     )
-  }) {
+  }) { paddingValues ->
     Column(
-      modifier = Modifier.padding(10.dp),
+      modifier = Modifier
+        .padding(paddingValues)
+        .padding(10.dp),
       verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
       TextField(

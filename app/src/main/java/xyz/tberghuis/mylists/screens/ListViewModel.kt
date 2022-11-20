@@ -11,17 +11,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import xyz.tberghuis.mylists.data.Myitem
 import xyz.tberghuis.mylists.data.MyitemDao
 import xyz.tberghuis.mylists.data.MylistDao
-
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
-import xyz.tberghuis.mylists.util.logd
-
 
 // todo hilt inject mylistId????
 // would i be better off without hilt???
@@ -35,9 +31,7 @@ class ListViewModel @Inject constructor(
   // this by operator/delegate makes MutableState clever somehow
   var confirmDeleteMyitemDialog by mutableStateOf<Myitem?>(null)
 
-  // using nullable type to store state is probably anti-pattern
-//  var confirmDeleteMylistDialog by mutableStateOf<Int?>(null)
-  var confirmDeleteMylistDialog by mutableStateOf<Boolean>(false)
+  var confirmDeleteMylistDialog by mutableStateOf(false)
 
   //
   var editMylistTitleDialog by mutableStateOf<String?>(null)

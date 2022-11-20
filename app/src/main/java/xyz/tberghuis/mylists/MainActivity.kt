@@ -14,8 +14,6 @@ import xyz.tberghuis.mylists.screens.AddListScreen
 import xyz.tberghuis.mylists.screens.BackupScreen
 import xyz.tberghuis.mylists.screens.HomeScreen
 import xyz.tberghuis.mylists.screens.ListScreen
-import xyz.tberghuis.mylists.tmp.DragNDropDemo
-import xyz.tberghuis.mylists.tmp.migration.MigrationScreen
 import xyz.tberghuis.mylists.ui.theme.MyListsTheme
 
 @AndroidEntryPoint
@@ -26,8 +24,6 @@ class MainActivity : ComponentActivity() {
     setContent {
       MyListsTheme {
         MyApp()
-//        MigrationScreen()
-//        DragNDropDemo()
       }
     }
   }
@@ -43,12 +39,10 @@ fun MyApp() {
     composable("backup") { BackupScreen() }
     composable("add-list") { AddListScreen(navController = navController) }
     composable(
-      "list/{mylistId}",
-      arguments = listOf(
+      "list/{mylistId}", arguments = listOf(
         navArgument("mylistId") { type = NavType.IntType },
       )
-    ) { backStackEntry ->
-//      val mylistId: Int = backStackEntry.arguments?.getInt("mylistId")!!
+    ) {
       ListScreen(
         navController = navController,
       )

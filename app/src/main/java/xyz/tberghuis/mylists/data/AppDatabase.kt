@@ -24,25 +24,17 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
     // todo alter table add myitem_order column
     // can i run sql update statements here???
     // test
-
     database.execSQL("ALTER TABLE myitem ADD COLUMN myitem_order integer default 0 not null")
-
-
     val c1 = database.query("select distinct mylist_id from myitem", null)
     var stat1 = c1.moveToFirst()
     while (stat1) {
       val mylistId = c1.getInt(c1.getColumnIndexOrThrow("mylist_id"))
       logd("mylistId $mylistId")
-
       updateMylistOrder(database, mylistId)
-
       stat1 = c1.moveToNext()
     }
     c1.close()
-
-
   }
-
 
   fun updateMylistOrder(db: SupportSQLiteDatabase, mylistId: Int) {
 //  val c1 = db.rawQuery("select myitem_id from mylist where mylist_id = ?", arrayOf("1"))
@@ -52,16 +44,13 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
     var stat1 = c1.moveToFirst()
     var order = 0
     while (stat1) {
-      val myitem_id = c1.getInt(c1.getColumnIndexOrThrow("myitem_id"))
-      logd("mylistId $mylistId myitem_id $myitem_id")
-
+      val myitemId = c1.getInt(c1.getColumnIndexOrThrow("myitem_id"))
+      logd("mylistId $mylistId myitem_id $myitemId")
       // update order
-      db.execSQL("update myitem set myitem_order = $order where myitem_id = $myitem_id and mylist_id = $mylistId")
-
+      db.execSQL("update myitem set myitem_order = $order where myitem_id = $myitemId and mylist_id = $mylistId")
       order++
       stat1 = c1.moveToNext()
     }
     c1.close()
   }
-
 }

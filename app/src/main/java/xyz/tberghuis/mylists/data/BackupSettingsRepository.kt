@@ -68,11 +68,9 @@ class BackupSettingsRepository
     }
   }
 
-
   suspend fun saveBackupTime(time: String) {
     dataStore.edit { preferences ->
       preferences[PreferencesKeys.BACKUP_LAST_TIME] = time
     }
   }
-
 }
