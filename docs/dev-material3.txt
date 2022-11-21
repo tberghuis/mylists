@@ -1,0 +1,12 @@
+compare empty projects
+
+remove livedata lib
+
+increment version
+
+release
+
+merge
+
+play store screenshots
++ description
