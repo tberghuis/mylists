@@ -7,3 +7,5 @@ to get a fresh db for version run the sql in emulator sqlite3 after `rm *`
 
 update dragndrop gradle dependency
   https://github.com/aclassen/ComposeReorderable
+
+remove livedata lib
