@@ -6,26 +6,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import xyz.tberghuis.mylists.data.BackupSettings
 import xyz.tberghuis.mylists.data.BackupSettingsRepository
 import xyz.tberghuis.mylists.service.BackupService
 import xyz.tberghuis.mylists.service.ImportBackupService
-import javax.inject.Inject
+import kotlinx.coroutines.flow.first
 
-@HiltViewModel
-class BackupViewModel @Inject constructor(
+class BackupViewModel(
   private val backupSettingsRepository: BackupSettingsRepository,
   private val importBackupService: ImportBackupService,
   private val backupService: BackupService
 ) : ViewModel() {
-
-  // this class is for things like password field eye state
-
-  val backupSettingsStateFlow = MutableStateFlow(BackupSettings())
 
   var uploading by mutableStateOf(false)
   var importing by mutableStateOf(false)
@@ -33,57 +25,62 @@ class BackupViewModel @Inject constructor(
   var backupResultStatus by mutableStateOf("")
   var backupResultMessage by mutableStateOf("")
 
+  val host = mutableStateOf("")
+  val user = mutableStateOf("")
+  val password = mutableStateOf("")
+  val filePath = mutableStateOf("")
+  val port = mutableStateOf("")
+
+  var fieldsInitialised by mutableStateOf(false)
+
+  val lastBackupTimeFlow = backupSettingsRepository.lastBackupTimeFlow
+
   init {
     viewModelScope.launch(Dispatchers.IO) {
-      // this should be state flow.... or not???
-      // remove save button
-      // one way data flow
-      backupSettingsRepository.backupSettingsFlow.collect { bs ->
-        backupSettingsStateFlow.value = bs
-      }
-//      host = bs.host
-//      user = bs.user
-//      password = bs.password
-//      filePath = bs.filePath
-//      port = bs.port.toString()
-//      lastBackupTime = bs.lastBackupTime
+      // future, do all this in parallel
+      host.value = backupSettingsRepository.hostFlow.first()
+      user.value = backupSettingsRepository.userFlow.first()
+      password.value = backupSettingsRepository.passwordFlow.first()
+      filePath.value = backupSettingsRepository.filePathFlow.first()
+      port.value = backupSettingsRepository.portFlow.first().toString()
+      fieldsInitialised = true
     }
   }
 
-  // do this inefficient as i don't know any better yet
-  // read source of data class copy
-  // i probably want custom validation so this way probably ain't so bad
-
-  fun updateHost(host: String) {
+  // doitwrong
+  fun updateHost(s: String) {
+    host.value = s
     viewModelScope.launch(Dispatchers.IO) {
-      backupSettingsRepository.save(backupSettingsStateFlow.value.copy(host = host))
+      backupSettingsRepository.updateHost(s)
     }
   }
 
-  fun updateUser(user: String) {
+  fun updateUser(s: String) {
+    user.value = s
     viewModelScope.launch(Dispatchers.IO) {
-      backupSettingsRepository.save(backupSettingsStateFlow.value.copy(user = user))
+      backupSettingsRepository.updateUser(s)
     }
   }
 
-  fun updatePassword(password: String) {
+  fun updatePassword(s: String) {
+    password.value = s
     viewModelScope.launch(Dispatchers.IO) {
-      backupSettingsRepository.save(backupSettingsStateFlow.value.copy(password = password))
+      backupSettingsRepository.updatePassword(s)
     }
   }
 
-  fun updateFilePath(filePath: String) {
+  fun updateFilePath(s: String) {
+    filePath.value = s
     viewModelScope.launch(Dispatchers.IO) {
-      backupSettingsRepository.save(backupSettingsStateFlow.value.copy(filePath = filePath))
+      backupSettingsRepository.updateFilePath(s)
     }
   }
 
-  fun updatePort(port: String) {
-    viewModelScope.launch(Dispatchers.IO) {
-      try {
-        backupSettingsRepository.save(backupSettingsStateFlow.value.copy(port = port.toInt()))
-      } catch (e: NumberFormatException) {
-//        println(e)
+  fun updatePort(s: String) {
+    s.toIntOrNull()?.also {
+      port.value = s
+      viewModelScope.launch(Dispatchers.IO) {
+        backupSettingsRepository.updatePort(it)
       }
     }
   }
@@ -91,13 +88,17 @@ class BackupViewModel @Inject constructor(
   fun backup() {
     viewModelScope.launch(Dispatchers.Default) {
       uploading = true
-      val br = backupService.uploadDb(backupSettingsStateFlow.value)
+      val br = backupService.uploadDb(
+        user = user.value,
+        host = host.value,
+        port = port.value.toIntOrNull() ?: return@launch,
+        password = password.value,
+        filePath = filePath.value,
+      )
       backupResultStatus = br.status
       backupResultMessage = br.message
       if (br.status == "success") {
-        val bs = backupSettingsStateFlow.value.copy(lastBackupTime = br.time)
-        backupSettingsStateFlow.value = bs
-        backupSettingsRepository.saveBackupTime(br.time)
+        backupSettingsRepository.updateLastBackupTime(br.time)
       }
       uploading = false
     }
@@ -106,7 +107,14 @@ class BackupViewModel @Inject constructor(
   fun import(activity: Activity) {
     viewModelScope.launch(Dispatchers.Default) {
       importing = true
-      importBackupService.import(backupSettingsStateFlow.value, activity)
+      importBackupService.import(
+        user = user.value,
+        host = host.value,
+        port = port.value.toIntOrNull() ?: return@launch,
+        password = password.value,
+        filePath = filePath.value,
+        activity = activity
+      )
       // activity should be restarted
     }
   }

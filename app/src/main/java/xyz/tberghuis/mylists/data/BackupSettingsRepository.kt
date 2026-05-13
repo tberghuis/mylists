@@ -1,31 +1,17 @@
 package xyz.tberghuis.mylists.data
 
-import android.util.Log
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
-import java.io.IOException
-import javax.inject.Inject
-import javax.inject.Singleton
 
-data class BackupSettings(
-  val user: String = "",
-  val host: String = "",
-  val port: Int = 22,
-  val password: String = "",
-  val filePath: String = "",
-  val lastBackupTime: String = "N/A"
-)
-
-@Singleton
-class BackupSettingsRepository
-@Inject constructor(
+class BackupSettingsRepository(
   private val dataStore: DataStore<Preferences>
 ) {
-
-  private object PreferencesKeys {
+  private companion object PreferencesKeys {
     val BACKUP_USER = stringPreferencesKey("backup_user")
     val BACKUP_HOST = stringPreferencesKey("backup_host")
     val BACKUP_PORT = intPreferencesKey("backup_port")
@@ -34,43 +20,64 @@ class BackupSettingsRepository
     val BACKUP_LAST_TIME = stringPreferencesKey("backup_last_time")
   }
 
-  val backupSettingsFlow: Flow<BackupSettings> = dataStore.data
-    .catch { exception ->
-      // dataStore.data throws an IOException when an error is encountered when reading data
-      if (exception is IOException) {
-        Log.e("xxx", "Error reading preferences.", exception)
-        // probably better to crash
-        emit(emptyPreferences())
-      } else {
-        throw exception
-      }
-    }.map { preferences ->
-      val user = preferences[PreferencesKeys.BACKUP_USER] ?: ""
-      val host = preferences[PreferencesKeys.BACKUP_HOST] ?: ""
-      val port = preferences[PreferencesKeys.BACKUP_PORT] ?: 22
-      val password = preferences[PreferencesKeys.BACKUP_PASSWORD] ?: ""
-      val filePath = preferences[PreferencesKeys.BACKUP_FILEPATH] ?: ""
-      val lastBackupTime = preferences[PreferencesKeys.BACKUP_LAST_TIME] ?: "N/A"
+  val userFlow: Flow<String> = dataStore.data.map { preferences ->
+    preferences[BACKUP_USER] ?: ""
+  }
 
-      BackupSettings(
-        user, host, port, password, filePath, lastBackupTime
-      )
-    }
-
-  suspend fun save(backupSettings: BackupSettings) {
+  suspend fun updateUser(user: String) {
     dataStore.edit { preferences ->
-      preferences[PreferencesKeys.BACKUP_USER] = backupSettings.user
-      preferences[PreferencesKeys.BACKUP_HOST] = backupSettings.host
-      preferences[PreferencesKeys.BACKUP_PORT] = backupSettings.port
-      preferences[PreferencesKeys.BACKUP_PASSWORD] = backupSettings.password
-      preferences[PreferencesKeys.BACKUP_FILEPATH] = backupSettings.filePath
-      preferences[PreferencesKeys.BACKUP_LAST_TIME] = backupSettings.lastBackupTime
+      preferences[BACKUP_USER] = user
     }
   }
 
-  suspend fun saveBackupTime(time: String) {
+  val hostFlow: Flow<String> = dataStore.data.map { preferences ->
+    preferences[BACKUP_HOST] ?: ""
+  }
+
+  suspend fun updateHost(host: String) {
     dataStore.edit { preferences ->
-      preferences[PreferencesKeys.BACKUP_LAST_TIME] = time
+      preferences[BACKUP_HOST] = host
+    }
+  }
+
+
+  val portFlow: Flow<Int> = dataStore.data.map { preferences ->
+    preferences[BACKUP_PORT] ?: 22
+  }
+
+  suspend fun updatePort(port: Int) {
+    dataStore.edit { preferences ->
+      preferences[BACKUP_PORT] = port
+    }
+  }
+
+  val passwordFlow: Flow<String> = dataStore.data.map { preferences ->
+    preferences[BACKUP_PASSWORD] ?: ""
+  }
+
+  suspend fun updatePassword(password: String) {
+    dataStore.edit { preferences ->
+      preferences[BACKUP_PASSWORD] = password
+    }
+  }
+
+  val filePathFlow: Flow<String> = dataStore.data.map { preferences ->
+    preferences[BACKUP_FILEPATH] ?: ""
+  }
+
+  suspend fun updateFilePath(filePath: String) {
+    dataStore.edit { preferences ->
+      preferences[BACKUP_FILEPATH] = filePath
+    }
+  }
+
+  val lastBackupTimeFlow: Flow<String> = dataStore.data.map { preferences ->
+    preferences[BACKUP_LAST_TIME] ?: "N/A"
+  }
+
+  suspend fun updateLastBackupTime(lastBackupTime: String) {
+    dataStore.edit { preferences ->
+      preferences[BACKUP_LAST_TIME] = lastBackupTime
     }
   }
 }

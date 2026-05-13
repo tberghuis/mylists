@@ -11,13 +11,13 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddListScreen(
-  viewModel: AddListViewModel = hiltViewModel(),
+  viewModel: AddListViewModel = koinViewModel(),
   navController: NavHostController
 ) {
 

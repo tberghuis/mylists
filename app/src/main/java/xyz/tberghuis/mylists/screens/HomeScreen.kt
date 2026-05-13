@@ -15,14 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.androidx.compose.koinViewModel
 import xyz.tberghuis.mylists.components.HomeTopAppBar
 import xyz.tberghuis.mylists.data.Mylist
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-  navHostController: NavHostController, viewModel: HomeViewModel = hiltViewModel()
+  navHostController: NavHostController, viewModel: HomeViewModel = koinViewModel()
 ) {
   // delegate by
   val listNames: List<Mylist> by viewModel.getAllListNames().collectAsState(initial = listOf())

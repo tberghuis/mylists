@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
@@ -18,17 +17,18 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BackupScreen(
-  viewModel: BackupViewModel = hiltViewModel(),
+  viewModel: BackupViewModel = koinViewModel(),
 ) {
-  val bs = viewModel.backupSettingsStateFlow.collectAsState().value
   val actionsEnabled = !(viewModel.uploading || viewModel.importing)
   var passwordVisibility by remember { mutableStateOf(false) }
   val context = LocalContext.current
   var importDialog by remember { mutableStateOf(false) }
+  val lastBackupTime = viewModel.lastBackupTimeFlow.collectAsState("").value
 
   Scaffold(topBar = {
     TopAppBar(
@@ -42,20 +42,24 @@ fun BackupScreen(
         .padding(10.dp),
       verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
+      if (!viewModel.fieldsInitialised) {
+        return@Column
+      }
+
       TextField(
-        value = bs.host,
+        value = viewModel.host.value,
         onValueChange = viewModel::updateHost,
         label = { Text("host") }
       )
       TextField(
-        value = bs.user,
+        value = viewModel.user.value,
         onValueChange = viewModel::updateUser,
         label = { Text("user") }
       )
       // https://stackoverflow.com/questions/65304229/toggle-password-field-jetpack-compose
       TextField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        value = bs.password,
+        value = viewModel.password.value,
         onValueChange = viewModel::updatePassword,
         label = { Text("password") },
         visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
@@ -72,12 +76,12 @@ fun BackupScreen(
       )
       TextField(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        value = bs.port.toString(),
+        value = viewModel.port.value,
         onValueChange = viewModel::updatePort,
         label = { Text("port") }
       )
       TextField(
-        value = bs.filePath,
+        value = viewModel.filePath.value,
         onValueChange = viewModel::updateFilePath,
         label = { Text("File path") }
       )
@@ -104,7 +108,7 @@ fun BackupScreen(
       }
 
       Row {
-        Text("Last backup time: ${bs.lastBackupTime}")
+        Text("Last backup time: $lastBackupTime")
       }
 
       if (!actionsEnabled) {
@@ -113,17 +117,12 @@ fun BackupScreen(
         Text("status: ${viewModel.backupResultStatus}")
         Text(viewModel.backupResultMessage)
       }
-
-
     }
   }
-
   if (importDialog) {
     ImportAlertDialog({ viewModel.import(context as Activity) }, { importDialog = false })
   }
-
 }
-
 
 @Composable
 fun ImportAlertDialog(

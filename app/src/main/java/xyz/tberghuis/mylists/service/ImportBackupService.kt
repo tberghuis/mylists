@@ -3,28 +3,27 @@ package xyz.tberghuis.mylists.service
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import dagger.hilt.android.qualifiers.ApplicationContext
 import xyz.tberghuis.mylists.MainActivity
-import xyz.tberghuis.mylists.data.BackupSettings
 import xyz.tberghuis.mylists.util.initSecureChannel
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
 class ImportBackupService
-@Inject constructor(
-  @ApplicationContext private val context: Context // this is appContext
+constructor(
+  private val context: Context // this is appContext
 ) {
   // TODO I should do some warning dialog...
   fun import(
-    bs: BackupSettings,
+    user: String,
+    host: String,
+    port: Int,
+    password: String,
+    filePath: String,
     activity: Activity
   ) {
     context.deleteDatabase("mylists.db")
     try {
-      val channelWrapper = initSecureChannel(bs.user, bs.host, bs.port, bs.password)
+      val channelWrapper = initSecureChannel(user, host, port, password)
       val dbPath = context.getDatabasePath("mylists.db").absolutePath
-      channelWrapper.sftp.get(bs.filePath, dbPath)
+      channelWrapper.sftp.get(filePath, dbPath)
       channelWrapper.disconnect()
     } catch (e: Exception) {
       // TODO

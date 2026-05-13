@@ -21,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import xyz.tberghuis.mylists.components.DeleteAlertDialog
 import xyz.tberghuis.mylists.data.Myitem
@@ -29,11 +28,12 @@ import org.burnoutcrew.reorderable.*
 import xyz.tberghuis.mylists.util.logd
 import kotlin.math.max
 import kotlin.math.min
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ListScreen(
-  viewModel: ListViewModel = hiltViewModel(), navController: NavHostController,
+  viewModel: ListViewModel = koinViewModel(), navController: NavHostController,
 ) {
   Scaffold(topBar = { ListScreenTopAppBar(viewModel) }) { paddingValues ->
     Column(Modifier.padding(paddingValues)) {
@@ -72,7 +72,7 @@ fun onDragEnd(
 
 // bad function name... meh
 @Composable
-fun RenderMyitemList(viewModel: ListViewModel = hiltViewModel()) {
+fun RenderMyitemList(viewModel: ListViewModel = koinViewModel()) {
   val state = rememberReorderState()
   val myitemList = rememberMutableStateListOf<Myitem>()
   LaunchedEffect(Unit) {
@@ -134,7 +134,7 @@ fun RenderMyitemList(viewModel: ListViewModel = hiltViewModel()) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DraftTextEntry(
-  viewModel: ListViewModel = hiltViewModel(),
+  viewModel: ListViewModel = koinViewModel(),
 ) {
   val draftTextField by viewModel.draftTextFieldStateFlow.collectAsState()
   val addListItem: () -> Unit = {
@@ -251,7 +251,7 @@ fun EditDialog(
 
 @Composable
 fun ListScreenTopAppBar(
-  viewModel: ListViewModel = hiltViewModel(),
+  viewModel: ListViewModel = koinViewModel(),
 ) {
   val appBarTitle: String by viewModel.getAppBarTitle().observeAsState("")
   val onDeleteClick = { viewModel.confirmDeleteMylistDialog = true }

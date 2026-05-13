@@ -2,18 +2,14 @@ package xyz.tberghuis.mylists.service
 
 import android.content.Context
 import android.database.Cursor
-import xyz.tberghuis.mylists.data.BackupSettings
 import java.text.SimpleDateFormat
 import java.util.*
 import androidx.sqlite.db.SimpleSQLiteQuery
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import xyz.tberghuis.mylists.data.AppDatabase
 import xyz.tberghuis.mylists.util.initSecureChannel
 import java.lang.RuntimeException
-import javax.inject.Inject
-import javax.inject.Singleton
 
 // i need to learn better practices
 // this will come with time
@@ -23,11 +19,10 @@ class BackupResult(
   val time: String
 )
 
-@Singleton
 class BackupService
-@Inject constructor(
+constructor(
   private val room: AppDatabase,
-  @ApplicationContext private val context: Context
+  private val context: Context
 ) {
   private fun flushDbWal() {
     // https://stackoverflow.com/questions/50914254/room-pragma-query
@@ -37,7 +32,11 @@ class BackupService
 
   // TODO proper testing
   suspend fun uploadDb(
-    bs: BackupSettings,
+    user: String,
+    host: String,
+    port: Int,
+    password: String,
+    filePath: String,
   ): BackupResult {
     withContext(Dispatchers.IO) {
       flushDbWal()
@@ -47,11 +46,11 @@ class BackupService
     // the correct way will come with time
     // my mantra... do it wrong
     return try {
-      val channelWrapper = initSecureChannel(bs.user, bs.host, bs.port, bs.password)
+      val channelWrapper = initSecureChannel(user, host, port, password)
       val dbPath = context.getDatabasePath("mylists.db").absolutePath
       // todo if path don't exist throw....
 
-      channelWrapper.sftp.put(dbPath, bs.filePath)
+      channelWrapper.sftp.put(dbPath, filePath)
       channelWrapper.disconnect()
       val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm")
       val currentDate = sdf.format(Date())

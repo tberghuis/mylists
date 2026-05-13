@@ -7,7 +7,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -15,14 +14,12 @@ import kotlinx.coroutines.launch
 import xyz.tberghuis.mylists.data.Myitem
 import xyz.tberghuis.mylists.data.MyitemDao
 import xyz.tberghuis.mylists.data.MylistDao
-import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
 
 // todo hilt inject mylistId????
 // would i be better off without hilt???
-@HiltViewModel
-class ListViewModel @Inject constructor(
+class ListViewModel constructor(
   savedStateHandle: SavedStateHandle,
   private val myitemDao: MyitemDao,
   private val mylistDao: MylistDao

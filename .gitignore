@@ -7,7 +7,6 @@
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
-/.idea/deploymentTargetDropDown.xml
 .DS_Store
 /build
 /captures
@@ -15,20 +14,8 @@
 .cxx
 local.properties
 
-/app/build
-
-/app/release
-
-hidden.txt
-
-/.idea/compiler.xml
 /.idea/gradle.xml
 /.idea/misc.xml
+/.idea/planningMode.xml
+/.idea/vcs.xml
 /.idea/inspectionProfiles/Project_Default.xml
-/.idea/AndroidProjectSystem.xml
-/.idea/appInsightsSettings.xml
-/.idea/deploymentTargetSelector.xml
-/.idea/markdown.xml
-/.idea/migrations.xml
-/.idea/runConfigurations.xml
-/.idea/studiobot.xml
