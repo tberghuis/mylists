@@ -1,0 +1,2 @@
+v1.4.0    2026-05-13  001-update-compose
+  fix bug edit text fields on backup settings screen
