@@ -68,8 +68,24 @@ class BackupViewModel(
           application,
           AppDatabase::class.java,
           importDbFile.path
+//          "tmp.db"
         )
+//          .createFromFile(importDbFile)
           .build()
+
+
+//        val cursor = roomImport.query("PRAGMA journal_mode", null)
+//        if (cursor.moveToFirst()) {
+//          val result = cursor.getString(0)
+//          if (result != "ok") {
+//            // Handle corruption (e.g., delete and recreate)
+//            logd("import ok")
+//          } else {
+//            logd("import not ok")
+//          }
+//        }
+//        cursor.close()
+
         logd("roomImport $roomImport")
         db.close()
         importDbFile.copyTo(application.getDatabasePath(DB_FILENAME), overwrite = true)
