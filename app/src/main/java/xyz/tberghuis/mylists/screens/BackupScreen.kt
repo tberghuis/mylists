@@ -19,8 +19,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
-import xyz.tberghuis.mylists.tmp.BackupButton
-import xyz.tberghuis.mylists.tmp.ImportButton
+import xyz.tberghuis.mylists.components.BackupButton
+import xyz.tberghuis.mylists.components.ImportButton
 import xyz.tberghuis.mylists.util.logd
 
 @OptIn(ExperimentalMaterial3Api::class)

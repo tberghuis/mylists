@@ -1,4 +1,4 @@
-package xyz.tberghuis.mylists.tmp
+package xyz.tberghuis.mylists.components
 
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
