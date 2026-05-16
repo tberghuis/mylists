@@ -2,6 +2,7 @@ package xyz.tberghuis.mylists.screens
 
 import android.app.Activity
 import android.app.Application
+import android.database.sqlite.SQLiteDatabase
 import android.net.Uri
 import android.util.Log
 import androidx.compose.runtime.getValue
@@ -63,6 +64,30 @@ class BackupViewModel(
           }
         }
 
+
+//        SQLiteDatabase.openDatabase(
+//          importDbFile.path,
+//          null,
+//          SQLiteDatabase.OPEN_READONLY
+//        ).use { db ->
+//
+//          logd("db.version ${db.version}")
+//
+//
+//          val cursor = db.rawQuery("PRAGMA integrity_check", null);
+//          if (cursor.moveToFirst()) {
+//            val result = cursor.getString(0);
+//            if (result != "ok") {
+//                logd("import ok")
+//            } else {
+//                logd("import ok")
+//            }
+//          }
+//          cursor.close();
+//
+//        }
+
+
         // test if IMPORT_DB_FILENAME is a valid room database
         val roomImport = Room.databaseBuilder(
           application,
@@ -71,22 +96,26 @@ class BackupViewModel(
 //          "tmp.db"
         )
 //          .createFromFile(importDbFile)
+
           .build()
 
+        logd("before PRAGMA journal_mode")
+        val cursor = roomImport.openHelper.writableDatabase.query("PRAGMA journal_mode")
+        if (cursor.moveToFirst()) {
+          val result = cursor.getString(0)
+          logd("result $result")
+          if (result != "ok") {
+            // Handle corruption (e.g., delete and recreate)
+            logd("import not ok")
+          } else {
+            logd("import ok")
+          }
+        }
+        cursor.close()
 
-//        val cursor = roomImport.query("PRAGMA journal_mode", null)
-//        if (cursor.moveToFirst()) {
-//          val result = cursor.getString(0)
-//          if (result != "ok") {
-//            // Handle corruption (e.g., delete and recreate)
-//            logd("import ok")
-//          } else {
-//            logd("import not ok")
-//          }
-//        }
-//        cursor.close()
+        logd("after PRAGMA journal_mode")
 
-        logd("roomImport $roomImport")
+//        logd("roomImport $roomImport")
         db.close()
         importDbFile.copyTo(application.getDatabasePath(DB_FILENAME), overwrite = true)
         triggerRestart(activity)
