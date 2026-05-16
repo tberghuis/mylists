@@ -5,11 +5,11 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 import xyz.tberghuis.mylists.data.BackupSettingsRepository
 import xyz.tberghuis.mylists.screens.AddListViewModel
-import xyz.tberghuis.mylists.screens.BackupViewModel
 import xyz.tberghuis.mylists.screens.HomeViewModel
 import xyz.tberghuis.mylists.screens.ListViewModel
 import xyz.tberghuis.mylists.service.BackupService
 import xyz.tberghuis.mylists.service.ImportBackupService
+import xyz.tberghuis.mylists.tmp.BackupViewModel
 
 val appModule = module {
   singleOf(::provideDataBase) // AppDatabase

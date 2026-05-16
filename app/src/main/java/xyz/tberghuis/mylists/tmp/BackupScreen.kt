@@ -1,4 +1,4 @@
-package xyz.tberghuis.mylists.screens
+package xyz.tberghuis.mylists.tmp
 
 import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
@@ -21,8 +21,8 @@ import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun XxxBackupScreen(
-  viewModel: XxxBackupViewModel = koinViewModel(),
+fun BackupScreen(
+  viewModel: BackupViewModel = koinViewModel(),
 ) {
   val actionsEnabled = !(viewModel.uploading || viewModel.importing)
   var passwordVisibility by remember { mutableStateOf(false) }

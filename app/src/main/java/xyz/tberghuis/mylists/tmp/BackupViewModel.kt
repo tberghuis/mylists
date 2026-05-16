@@ -1,4 +1,4 @@
-package xyz.tberghuis.mylists.screens
+package xyz.tberghuis.mylists.tmp
 
 import android.app.Activity
 import androidx.compose.runtime.getValue
@@ -13,7 +13,7 @@ import xyz.tberghuis.mylists.service.BackupService
 import xyz.tberghuis.mylists.service.ImportBackupService
 import kotlinx.coroutines.flow.first
 
-class XxxBackupViewModel(
+class BackupViewModel(
   private val backupSettingsRepository: BackupSettingsRepository,
   private val importBackupService: ImportBackupService,
   private val backupService: BackupService
