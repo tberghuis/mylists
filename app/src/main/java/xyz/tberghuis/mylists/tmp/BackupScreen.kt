@@ -2,6 +2,7 @@ package xyz.tberghuis.mylists.tmp
 
 import android.app.Activity.RESULT_OK
 import android.content.Intent
+import androidx.activity.compose.LocalActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -56,6 +57,9 @@ fun ImportAlertDialog(
 //  if (!vm.importDialog) {
 //    return
 //  }
+
+  val activity = LocalActivity.current
+
   val close = { vm.importDialog = false }
   val launcher =
     rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -67,7 +71,7 @@ fun ImportAlertDialog(
           logd("result.data ${result.data}")
           logd("result.data.data ${result.data?.data}")
 
-          result.data?.data?.let { vm.import(it) }
+          result.data?.data?.let { vm.import(activity!!, it) }
         }
       }
     }
