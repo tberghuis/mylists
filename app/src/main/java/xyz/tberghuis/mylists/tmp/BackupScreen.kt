@@ -24,11 +24,9 @@ import org.koin.androidx.compose.koinViewModel
 fun BackupScreen(
   viewModel: BackupViewModel = koinViewModel(),
 ) {
-  val actionsEnabled = !(viewModel.uploading || viewModel.importing)
-  var passwordVisibility by remember { mutableStateOf(false) }
+
   val context = LocalContext.current
-  var importDialog by remember { mutableStateOf(false) }
-  val lastBackupTime = viewModel.lastBackupTimeFlow.collectAsState("").value
+//  var importDialog by remember { mutableStateOf(false) }
 
   Scaffold(topBar = {
     TopAppBar(
@@ -42,85 +40,29 @@ fun BackupScreen(
         .padding(10.dp),
       verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-      if (!viewModel.fieldsInitialised) {
-        return@Column
-      }
 
-      TextField(
-        value = viewModel.host.value,
-        onValueChange = viewModel::updateHost,
-        label = { Text("host") }
-      )
-      TextField(
-        value = viewModel.user.value,
-        onValueChange = viewModel::updateUser,
-        label = { Text("user") }
-      )
-      // https://stackoverflow.com/questions/65304229/toggle-password-field-jetpack-compose
-      TextField(
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        value = viewModel.password.value,
-        onValueChange = viewModel::updatePassword,
-        label = { Text("password") },
-        visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-        trailingIcon = {
-          val image = if (passwordVisibility)
-            Icons.Filled.Visibility
-          else Icons.Filled.VisibilityOff
-          IconButton(onClick = {
-            passwordVisibility = !passwordVisibility
-          }) {
-            Icon(imageVector = image, "")
-          }
-        }
-      )
-      TextField(
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        value = viewModel.port.value,
-        onValueChange = viewModel::updatePort,
-        label = { Text("port") }
-      )
-      TextField(
-        value = viewModel.filePath.value,
-        onValueChange = viewModel::updateFilePath,
-        label = { Text("File path") }
-      )
 
       Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        // todo disable buttons before backupsettings flow first collects
-        // meh
         Button(
-          enabled = actionsEnabled,
           onClick = viewModel::backup
         ) {
           Text("Backup")
         }
 
         Button(
-          enabled = actionsEnabled,
           onClick = {
-//            viewModel.import(context as Activity)
-            importDialog = true
+            viewModel.importDialog = true
           }
         ) {
           Text("Import")
         }
       }
 
-      Row {
-        Text("Last backup time: $lastBackupTime")
-      }
 
-      if (!actionsEnabled) {
-        Text("processing...")
-      } else {
-        Text("status: ${viewModel.backupResultStatus}")
-        Text(viewModel.backupResultMessage)
-      }
     }
   }
-  if (importDialog) {
-    ImportAlertDialog({ viewModel.import(context as Activity) }, { importDialog = false })
+  if (viewModel.importDialog) {
+    ImportAlertDialog(import = { }, close = { viewModel.importDialog = false })
   }
 }
 
