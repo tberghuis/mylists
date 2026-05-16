@@ -21,10 +21,6 @@ import org.koin.androidx.compose.koinViewModel
 fun BackupScreen(
   viewModel: BackupViewModel = koinViewModel(),
 ) {
-
-  val context = LocalContext.current
-//  var importDialog by remember { mutableStateOf(false) }
-
   Scaffold(topBar = {
     TopAppBar(
       // TODO back/up home arrow
@@ -37,15 +33,12 @@ fun BackupScreen(
         .padding(10.dp),
       verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-
-
       Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         Button(
           onClick = viewModel::backup
         ) {
           Text("Backup")
         }
-
         Button(
           onClick = {
             viewModel.importDialog = true
@@ -54,8 +47,6 @@ fun BackupScreen(
           Text("Import")
         }
       }
-
-
     }
   }
   if (viewModel.importDialog) {
@@ -95,4 +86,3 @@ fun ImportAlertDialog(
     }
   )
 }
-
