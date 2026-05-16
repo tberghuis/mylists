@@ -43,6 +43,7 @@ class BackupViewModel(
 
   fun import(importDbUri: Uri) {
     logd("import $importDbUri")
+    logd("why is this function not being reached?")
     viewModelScope.launch(IO) {
 
 

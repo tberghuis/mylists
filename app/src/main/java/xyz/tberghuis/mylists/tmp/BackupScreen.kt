@@ -43,28 +43,35 @@ fun BackupScreen(
       }
     }
   }
-  if (viewModel.importDialog) {
-    ImportAlertDialog()
-  }
+//  if (viewModel.importDialog) {
+//
+//  }
+  ImportAlertDialog()
 }
 
 @Composable
 fun ImportAlertDialog(
   vm: BackupViewModel = koinViewModel(),
 ) {
-  if (!vm.importDialog) {
-    return
-  }
+//  if (!vm.importDialog) {
+//    return
+//  }
   val close = { vm.importDialog = false }
   val launcher =
     rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
       logd("rememberLauncherForActivityResult $result")
+      logd("launcher result ${result.resultCode}")
+
       when (result.resultCode) {
         RESULT_OK -> {
+          logd("result.data ${result.data}")
+          logd("result.data.data ${result.data?.data}")
+
           result.data?.data?.let { vm.import(it) }
         }
       }
     }
+
   fun import() {
     val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
       type = "*/*"
@@ -73,30 +80,34 @@ fun ImportAlertDialog(
     launcher.launch(intent)
   }
 
-  AlertDialog(
-    onDismissRequest = close,
-    title = {
-      Text(text = "Warning")
-    },
-    text = {
-      Text("Importing will delete all your current lists")
-    },
-    confirmButton = {
-      Button(
-        onClick = {
-          close()
-          import()
+  if (vm.importDialog) {
+    AlertDialog(
+      onDismissRequest = close,
+      title = {
+        Text(text = "Warning")
+      },
+      text = {
+        Text("Importing will delete all your current lists")
+      },
+      confirmButton = {
+        Button(
+          onClick = {
+            close()
+            import()
+          }
+        ) {
+          Text("Confirm")
         }
-      ) {
-        Text("Confirm")
+      },
+      dismissButton = {
+        Button(
+          onClick = close
+        ) {
+          Text("Cancel")
+        }
       }
-    },
-    dismissButton = {
-      Button(
-        onClick = close
-      ) {
-        Text("Cancel")
-      }
-    }
-  )
+    )
+
+  }
+
 }
