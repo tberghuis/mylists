@@ -1,121 +1,82 @@
 package xyz.tberghuis.mylists.screens
 
 import android.app.Activity
+import android.app.Application
+import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.Dispatchers
+import androidx.room.Room
+import java.io.File
+import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
-import xyz.tberghuis.mylists.data.BackupSettingsRepository
-import xyz.tberghuis.mylists.service.BackupService
-import xyz.tberghuis.mylists.service.ImportBackupService
-import kotlinx.coroutines.flow.first
+import xyz.tberghuis.mylists.DB_FILENAME
+import xyz.tberghuis.mylists.IMPORT_DB_FILENAME
+import xyz.tberghuis.mylists.data.AppDatabase
+import xyz.tberghuis.mylists.service.triggerRestart
+import xyz.tberghuis.mylists.util.logd
 
-class XxxBackupViewModel(
-  private val backupSettingsRepository: BackupSettingsRepository,
-  private val importBackupService: ImportBackupService,
-  private val backupService: BackupService
+class BackupViewModel(
+  private val application: Application,
+  private val db: AppDatabase,
 ) : ViewModel() {
+  var importDialog by mutableStateOf(false)
 
-  var uploading by mutableStateOf(false)
-  var importing by mutableStateOf(false)
+  fun backup(backupFileUri: Uri) {
+    viewModelScope.launch(IO) {
+      // checkpoint
+      val query = "pragma wal_checkpoint(full)"
+      db.query(query, null).use { cursor ->
+        if (cursor.moveToFirst()) {
+          val busy = cursor.getInt(0)
+          val log = cursor.getInt(1)
+          val checkpointed = cursor.getInt(2)
+        }
+      }
 
-  var backupResultStatus by mutableStateOf("")
-  var backupResultMessage by mutableStateOf("")
-
-  val host = mutableStateOf("")
-  val user = mutableStateOf("")
-  val password = mutableStateOf("")
-  val filePath = mutableStateOf("")
-  val port = mutableStateOf("")
-
-  var fieldsInitialised by mutableStateOf(false)
-
-  val lastBackupTimeFlow = backupSettingsRepository.lastBackupTimeFlow
-
-  init {
-    viewModelScope.launch(Dispatchers.IO) {
-      // future, do all this in parallel
-      host.value = backupSettingsRepository.hostFlow.first()
-      user.value = backupSettingsRepository.userFlow.first()
-      password.value = backupSettingsRepository.passwordFlow.first()
-      filePath.value = backupSettingsRepository.filePathFlow.first()
-      port.value = backupSettingsRepository.portFlow.first().toString()
-      fieldsInitialised = true
-    }
-  }
-
-  // doitwrong
-  fun updateHost(s: String) {
-    host.value = s
-    viewModelScope.launch(Dispatchers.IO) {
-      backupSettingsRepository.updateHost(s)
-    }
-  }
-
-  fun updateUser(s: String) {
-    user.value = s
-    viewModelScope.launch(Dispatchers.IO) {
-      backupSettingsRepository.updateUser(s)
-    }
-  }
-
-  fun updatePassword(s: String) {
-    password.value = s
-    viewModelScope.launch(Dispatchers.IO) {
-      backupSettingsRepository.updatePassword(s)
-    }
-  }
-
-  fun updateFilePath(s: String) {
-    filePath.value = s
-    viewModelScope.launch(Dispatchers.IO) {
-      backupSettingsRepository.updateFilePath(s)
-    }
-  }
-
-  fun updatePort(s: String) {
-    s.toIntOrNull()?.also {
-      port.value = s
-      viewModelScope.launch(Dispatchers.IO) {
-        backupSettingsRepository.updatePort(it)
+      val dbFile = application.getDatabasePath(DB_FILENAME)
+      application.contentResolver.openOutputStream(backupFileUri)?.use { os ->
+        dbFile.inputStream().use { fis ->
+          fis.copyTo(os)
+        }
       }
     }
+
   }
 
-  fun backup() {
-    viewModelScope.launch(Dispatchers.Default) {
-      uploading = true
-      val br = backupService.uploadDb(
-        user = user.value,
-        host = host.value,
-        port = port.value.toIntOrNull() ?: return@launch,
-        password = password.value,
-        filePath = filePath.value,
-      )
-      backupResultStatus = br.status
-      backupResultMessage = br.message
-      if (br.status == "success") {
-        backupSettingsRepository.updateLastBackupTime(br.time)
+  fun import(activity: Activity, filePickerUri: Uri) {
+    logd("filePickerUri $filePickerUri")
+    viewModelScope.launch(IO) {
+
+      val importDbPath = application.getDatabasePath(IMPORT_DB_FILENAME).absolutePath
+      val importDbFile = File(importDbPath)
+      val inputStream = application.contentResolver.openInputStream(filePickerUri)
+
+      try {
+        // copy from filePickerUri to IMPORT_DB_FILENAME
+        inputStream?.use { input ->
+          importDbFile.outputStream().use { output ->
+            input.copyTo(output)
+          }
+        }
+
+        // test if IMPORT_DB_FILENAME is a valid room database
+        val roomImport = Room.databaseBuilder(
+          application,
+          AppDatabase::class.java,
+          importDbFile.path
+        )
+          .build()
+        logd("roomImport $roomImport")
+        db.close()
+        importDbFile.copyTo(application.getDatabasePath(DB_FILENAME), overwrite = true)
+        triggerRestart(activity)
+      } catch (e: Exception) {
+        Log.e("BackupViewModel", "$e")
       }
-      uploading = false
-    }
-  }
-
-  fun import(activity: Activity) {
-    viewModelScope.launch(Dispatchers.Default) {
-      importing = true
-      importBackupService.import(
-        user = user.value,
-        host = host.value,
-        port = port.value.toIntOrNull() ?: return@launch,
-        password = password.value,
-        filePath = filePath.value,
-        activity = activity
-      )
-      // activity should be restarted
     }
   }
 }

@@ -1,35 +1,33 @@
 package xyz.tberghuis.mylists.screens
 
-import android.app.Activity
+import android.app.Activity.RESULT_OK
+import android.content.Intent
+import androidx.activity.compose.LocalActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
+import xyz.tberghuis.mylists.tmp.BackupButton
+import xyz.tberghuis.mylists.tmp.ImportButton
+import xyz.tberghuis.mylists.util.logd
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun XxxBackupScreen(
-  viewModel: XxxBackupViewModel = koinViewModel(),
+fun BackupScreen(
+  viewModel: BackupViewModel = koinViewModel(),
 ) {
-  val actionsEnabled = !(viewModel.uploading || viewModel.importing)
-  var passwordVisibility by remember { mutableStateOf(false) }
-  val context = LocalContext.current
-  var importDialog by remember { mutableStateOf(false) }
-  val lastBackupTime = viewModel.lastBackupTimeFlow.collectAsState("").value
-
   Scaffold(topBar = {
     TopAppBar(
       // TODO back/up home arrow
@@ -42,118 +40,68 @@ fun XxxBackupScreen(
         .padding(10.dp),
       verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-      if (!viewModel.fieldsInitialised) {
-        return@Column
-      }
-
-      TextField(
-        value = viewModel.host.value,
-        onValueChange = viewModel::updateHost,
-        label = { Text("host") }
-      )
-      TextField(
-        value = viewModel.user.value,
-        onValueChange = viewModel::updateUser,
-        label = { Text("user") }
-      )
-      // https://stackoverflow.com/questions/65304229/toggle-password-field-jetpack-compose
-      TextField(
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-        value = viewModel.password.value,
-        onValueChange = viewModel::updatePassword,
-        label = { Text("password") },
-        visualTransformation = if (passwordVisibility) VisualTransformation.None else PasswordVisualTransformation(),
-        trailingIcon = {
-          val image = if (passwordVisibility)
-            Icons.Filled.Visibility
-          else Icons.Filled.VisibilityOff
-          IconButton(onClick = {
-            passwordVisibility = !passwordVisibility
-          }) {
-            Icon(imageVector = image, "")
-          }
-        }
-      )
-      TextField(
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        value = viewModel.port.value,
-        onValueChange = viewModel::updatePort,
-        label = { Text("port") }
-      )
-      TextField(
-        value = viewModel.filePath.value,
-        onValueChange = viewModel::updateFilePath,
-        label = { Text("File path") }
-      )
-
       Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        // todo disable buttons before backupsettings flow first collects
-        // meh
-        Button(
-          enabled = actionsEnabled,
-          onClick = viewModel::backup
-        ) {
-          Text("Backup")
-        }
-
-        Button(
-          enabled = actionsEnabled,
-          onClick = {
-//            viewModel.import(context as Activity)
-            importDialog = true
-          }
-        ) {
-          Text("Import")
-        }
-      }
-
-      Row {
-        Text("Last backup time: $lastBackupTime")
-      }
-
-      if (!actionsEnabled) {
-        Text("processing...")
-      } else {
-        Text("status: ${viewModel.backupResultStatus}")
-        Text(viewModel.backupResultMessage)
+        BackupButton()
+        ImportButton()
       }
     }
   }
-  if (importDialog) {
-    ImportAlertDialog({ viewModel.import(context as Activity) }, { importDialog = false })
-  }
+  ImportAlertDialog()
 }
 
 @Composable
 fun ImportAlertDialog(
-  import: () -> Unit,
-  close: () -> Unit
+  vm: BackupViewModel = koinViewModel(),
 ) {
-  AlertDialog(
-    onDismissRequest = close,
-    title = {
-      Text(text = "Warning")
-    },
-    text = {
-      Text("Importing will delete all your current lists")
-    },
-    confirmButton = {
-      Button(
-        onClick = {
-          close()
-          import()
+  val activity = LocalActivity.current
+  val close = { vm.importDialog = false }
+  val launcher =
+    rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+      logd("rememberLauncherForActivityResult $result")
+      logd("launcher result ${result.resultCode}")
+      when (result.resultCode) {
+        RESULT_OK -> {
+          logd("result.data ${result.data}")
+          logd("result.data.data ${result.data?.data}")
+          result.data?.data?.let { vm.import(activity!!, it) }
         }
-      ) {
-        Text("Confirm")
-      }
-    },
-    dismissButton = {
-      Button(
-        onClick = close
-      ) {
-        Text("Cancel")
       }
     }
-  )
-}
 
+  fun import() {
+    val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+      type = "*/*"
+      addCategory(Intent.CATEGORY_OPENABLE)
+    }
+    launcher.launch(intent)
+  }
+
+  if (vm.importDialog) {
+    AlertDialog(
+      onDismissRequest = close,
+      title = {
+        Text(text = "Warning")
+      },
+      text = {
+        Text("Importing will delete all your current lists")
+      },
+      confirmButton = {
+        Button(
+          onClick = {
+            close()
+            import()
+          }
+        ) {
+          Text("Confirm")
+        }
+      },
+      dismissButton = {
+        Button(
+          onClick = close
+        ) {
+          Text("Cancel")
+        }
+      }
+    )
+  }
+}
