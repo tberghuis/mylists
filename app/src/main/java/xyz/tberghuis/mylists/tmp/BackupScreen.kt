@@ -11,7 +11,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
@@ -34,11 +33,7 @@ fun BackupScreen(
       verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
       Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        Button(
-          onClick = viewModel::backup
-        ) {
-          Text("Backup")
-        }
+        BackupButton()
         Button(
           onClick = {
             viewModel.importDialog = true
