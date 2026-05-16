@@ -44,9 +44,6 @@ fun BackupScreen(
       }
     }
   }
-//  if (viewModel.importDialog) {
-//
-//  }
   ImportAlertDialog()
 }
 
@@ -54,23 +51,16 @@ fun BackupScreen(
 fun ImportAlertDialog(
   vm: BackupViewModel = koinViewModel(),
 ) {
-//  if (!vm.importDialog) {
-//    return
-//  }
-
   val activity = LocalActivity.current
-
   val close = { vm.importDialog = false }
   val launcher =
     rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
       logd("rememberLauncherForActivityResult $result")
       logd("launcher result ${result.resultCode}")
-
       when (result.resultCode) {
         RESULT_OK -> {
           logd("result.data ${result.data}")
           logd("result.data.data ${result.data?.data}")
-
           result.data?.data?.let { vm.import(activity!!, it) }
         }
       }
@@ -111,7 +101,5 @@ fun ImportAlertDialog(
         }
       }
     )
-
   }
-
 }
