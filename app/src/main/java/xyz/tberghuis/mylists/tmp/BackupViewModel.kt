@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import xyz.tberghuis.mylists.DB_FILENAME
 import xyz.tberghuis.mylists.data.AppDatabase
+import xyz.tberghuis.mylists.util.logd
 
 class BackupViewModel(
   private val application: Application,
@@ -39,5 +40,14 @@ class BackupViewModel(
     }
 
   }
+
+  fun import(importDbUri: Uri) {
+    logd("import $importDbUri")
+    viewModelScope.launch(IO) {
+
+
+    }
+  }
+
 
 }

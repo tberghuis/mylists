@@ -1,5 +1,9 @@
 package xyz.tberghuis.mylists.tmp
 
+import android.app.Activity.RESULT_OK
+import android.content.Intent
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
+import xyz.tberghuis.mylists.util.logd
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,26 +39,40 @@ fun BackupScreen(
     ) {
       Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
         BackupButton()
-        Button(
-          onClick = {
-            viewModel.importDialog = true
-          }
-        ) {
-          Text("Import")
-        }
+        ImportButton()
       }
     }
   }
   if (viewModel.importDialog) {
-    ImportAlertDialog(import = { }, close = { viewModel.importDialog = false })
+    ImportAlertDialog()
   }
 }
 
 @Composable
 fun ImportAlertDialog(
-  import: () -> Unit,
-  close: () -> Unit
+  vm: BackupViewModel = koinViewModel(),
 ) {
+  if (!vm.importDialog) {
+    return
+  }
+  val close = { vm.importDialog = false }
+  val launcher =
+    rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+      logd("rememberLauncherForActivityResult $result")
+      when (result.resultCode) {
+        RESULT_OK -> {
+          result.data?.data?.let { vm.import(it) }
+        }
+      }
+    }
+  fun import() {
+    val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+      type = "*/*"
+      addCategory(Intent.CATEGORY_OPENABLE)
+    }
+    launcher.launch(intent)
+  }
+
   AlertDialog(
     onDismissRequest = close,
     title = {
