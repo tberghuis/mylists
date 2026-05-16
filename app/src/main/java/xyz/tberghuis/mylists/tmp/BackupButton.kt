@@ -13,7 +13,7 @@ fun BackupButton(
   vm: BackupViewModel = koinViewModel(),
 ) {
   val launcher =
-    rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/x-sqlite3")) { uri ->
+    rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/vnd.sqlite3")) { uri ->
       uri?.let {
         vm.backup(uri)
       }
