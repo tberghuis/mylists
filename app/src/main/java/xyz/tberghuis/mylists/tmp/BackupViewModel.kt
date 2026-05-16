@@ -14,6 +14,7 @@ import java.io.File
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.launch
 import xyz.tberghuis.mylists.DB_FILENAME
+import xyz.tberghuis.mylists.IMPORT_DB_FILENAME
 import xyz.tberghuis.mylists.data.AppDatabase
 import xyz.tberghuis.mylists.service.triggerRestart
 import xyz.tberghuis.mylists.util.logd
@@ -50,32 +51,25 @@ class BackupViewModel(
     logd("filePickerUri $filePickerUri")
     viewModelScope.launch(IO) {
 
-      val importDbPath = application.getDatabasePath("import-mylists.db").absolutePath
+      val importDbPath = application.getDatabasePath(IMPORT_DB_FILENAME).absolutePath
       val importDbFile = File(importDbPath)
       val inputStream = application.contentResolver.openInputStream(filePickerUri)
 
       try {
-        // copy from filePickerUri to tmp db file
+        // copy from filePickerUri to IMPORT_DB_FILENAME
         inputStream?.use { input ->
           importDbFile.outputStream().use { output ->
             input.copyTo(output)
           }
         }
 
-        // test if tmp db file is a valid room database
+        // test if IMPORT_DB_FILENAME is a valid room database
         val roomImport = Room.databaseBuilder(
           application,
           AppDatabase::class.java,
           importDbFile.path
         )
           .build()
-
-//        val roomImport = Room.databaseBuilder(
-//          application,
-//          AppDatabase::class.java,
-//          filePickerUri.ab
-//        )
-//          .build()
         logd("roomImport $roomImport")
         db.close()
         importDbFile.copyTo(application.getDatabasePath(DB_FILENAME), overwrite = true)
@@ -83,9 +77,6 @@ class BackupViewModel(
       } catch (e: Exception) {
         Log.e("BackupViewModel", "$e")
       }
-
     }
   }
-
-
 }
