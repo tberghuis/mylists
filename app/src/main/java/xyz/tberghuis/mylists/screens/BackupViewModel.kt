@@ -13,10 +13,13 @@ import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import java.io.File
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import xyz.tberghuis.mylists.DB_FILENAME
 import xyz.tberghuis.mylists.IMPORT_DB_FILENAME
 import xyz.tberghuis.mylists.data.AppDatabase
+import xyz.tberghuis.mylists.data.Mylist
 import xyz.tberghuis.mylists.service.triggerRestart
 import xyz.tberghuis.mylists.util.logd
 
@@ -92,28 +95,31 @@ class BackupViewModel(
         val roomImport = Room.databaseBuilder(
           application,
           AppDatabase::class.java,
-          importDbFile.path
-//          "tmp.db"
+//          importDbFile.path
+          "tmp.db"
         )
-//          .createFromFile(importDbFile)
+          .createFromFile(importDbFile)
 
           .build()
+        logd("before import")
+        val list = roomImport.mylistDao().getAll().first()
+        logd("after import")
 
-        logd("before PRAGMA journal_mode")
-        val cursor = roomImport.openHelper.writableDatabase.query("PRAGMA journal_mode")
-        if (cursor.moveToFirst()) {
-          val result = cursor.getString(0)
-          logd("result $result")
-          if (result != "ok") {
-            // Handle corruption (e.g., delete and recreate)
-            logd("import not ok")
-          } else {
-            logd("import ok")
-          }
-        }
-        cursor.close()
-
-        logd("after PRAGMA journal_mode")
+//        logd("before PRAGMA integrity_check")
+//        val cursor = roomImport.openHelper.writableDatabase.query("PRAGMA integrity_check")
+//        if (cursor.moveToFirst()) {
+//          val result = cursor.getString(0)
+//          logd("result $result")
+//          if (result != "ok") {
+//            // Handle corruption (e.g., delete and recreate)
+//            logd("import not ok")
+//          } else {
+//            logd("import ok")
+//          }
+//        }
+//        cursor.close()
+//
+//        logd("after PRAGMA integrity_check")
 
 //        logd("roomImport $roomImport")
         db.close()
