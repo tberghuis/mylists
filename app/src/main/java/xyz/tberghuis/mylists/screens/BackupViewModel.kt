@@ -79,26 +79,26 @@ class XxxBackupViewModel(
   private fun import(importDbUri: Uri) {
     // delete import db
     application.deleteDatabase(IMPORT_DB_FILENAME)
-    // copy uri to tmp file
-    val importFile = copyFromUriToTmpFile(importDbUri) ?: return
+    // copy uri to temp file
+    val importFile = copyFromUriToTempFile(importDbUri) ?: return
     // import data
     readImportDbAndOverwriteDb(importFile)
   }
 
-  private fun copyFromUriToTmpFile(importDbUri: Uri): File? {
+  private fun copyFromUriToTempFile(importDbUri: Uri): File? {
     val inputStream = application.contentResolver.openInputStream(importDbUri)
-    var tmpFile: File? = null
+    var tempFile: File? = null
     try {
-      tmpFile = File.createTempFile("tmp", "db")
+      tempFile = File.createTempFile("temp", "db")
       inputStream?.use { input ->
-        tmpFile?.outputStream()?.use { output ->
+        tempFile?.outputStream()?.use { output ->
           input.copyTo(output)
         }
       }
     } catch (e: Exception) {
       Log.e("BackupViewModel", "$e")
     }
-    return tmpFile
+    return tempFile
   }
 
   private fun readImportDbAndOverwriteDb(importDb: File) {
@@ -127,7 +127,7 @@ class XxxBackupViewModel(
         db.mylistDao().insertAll(*mylists.toTypedArray())
         db.myitemDao().insertAll(*myitems.toTypedArray())
       }
-      // delete tmp file
+      // delete temp file
       importDb.delete()
     }
   }
