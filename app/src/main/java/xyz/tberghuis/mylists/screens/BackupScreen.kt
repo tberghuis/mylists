@@ -1,10 +1,5 @@
 package xyz.tberghuis.mylists.screens
 
-import android.app.Activity.RESULT_OK
-import android.content.Intent
-import androidx.activity.compose.LocalActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,13 +16,10 @@ import androidx.compose.ui.unit.dp
 import org.koin.androidx.compose.koinViewModel
 import xyz.tberghuis.mylists.components.BackupButton
 import xyz.tberghuis.mylists.components.ImportButton
-import xyz.tberghuis.mylists.util.logd
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun XxxBackupScreen(
-  viewModel: XxxBackupViewModel = koinViewModel(),
-) {
+fun XxxBackupScreen() {
   Scaffold(topBar = {
     TopAppBar(
       // TODO back/up home arrow
@@ -53,9 +45,7 @@ fun XxxBackupScreen(
 fun ImportAlertDialog(
   vm: XxxBackupViewModel = koinViewModel(),
 ) {
-  val activity = LocalActivity.current
   val close = { vm.importDialog = false }
-
   val import = vm.onClickImportHandler()
 
   if (vm.importDialog) {
