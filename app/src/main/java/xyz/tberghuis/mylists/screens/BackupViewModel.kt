@@ -1,27 +1,27 @@
 package xyz.tberghuis.mylists.screens
 
-import android.app.Activity
-import android.app.Application
-import android.database.sqlite.SQLiteDatabase
-import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.room.Room
-import java.io.File
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import xyz.tberghuis.mylists.DB_FILENAME
 import xyz.tberghuis.mylists.IMPORT_DB_FILENAME
-import xyz.tberghuis.mylists.data.AppDatabase
-import xyz.tberghuis.mylists.data.Mylist
-import xyz.tberghuis.mylists.service.triggerRestart
 import xyz.tberghuis.mylists.util.logd
+import android.app.Activity.RESULT_OK
+import android.app.Application
+import android.content.Intent
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.Composable
+import androidx.lifecycle.ViewModel
+import androidx.room.Room
+import java.io.File
+import xyz.tberghuis.mylists.data.AppDatabase
 
 class XxxBackupViewModel(
   private val application: Application,
@@ -48,86 +48,88 @@ class XxxBackupViewModel(
         }
       }
     }
-
   }
 
-  fun import(activity: Activity, filePickerUri: Uri) {
-    logd("filePickerUri $filePickerUri")
-    viewModelScope.launch(IO) {
 
-      val importDbPath = application.getDatabasePath(IMPORT_DB_FILENAME).absolutePath
-      val importDbFile = File(importDbPath)
-      val inputStream = application.contentResolver.openInputStream(filePickerUri)
-
-      try {
-        // copy from filePickerUri to IMPORT_DB_FILENAME
-        inputStream?.use { input ->
-          importDbFile.outputStream().use { output ->
-            input.copyTo(output)
+  @Composable
+  fun onClickImportHandler(): () -> Unit {
+    val launcher =
+      rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        logd("rememberLauncherForActivityResult $result")
+        logd("launcher result ${result.resultCode}")
+        when (result.resultCode) {
+          RESULT_OK -> {
+            logd("result.data ${result.data}")
+            logd("result.data.data ${result.data?.data}")
+            result.data?.data?.let {
+              import(it)
+            }
           }
         }
-
-
-//        SQLiteDatabase.openDatabase(
-//          importDbFile.path,
-//          null,
-//          SQLiteDatabase.OPEN_READONLY
-//        ).use { db ->
-//
-//          logd("db.version ${db.version}")
-//
-//
-//          val cursor = db.rawQuery("PRAGMA integrity_check", null);
-//          if (cursor.moveToFirst()) {
-//            val result = cursor.getString(0);
-//            if (result != "ok") {
-//                logd("import ok")
-//            } else {
-//                logd("import ok")
-//            }
-//          }
-//          cursor.close();
-//
-//        }
-
-
-        // test if IMPORT_DB_FILENAME is a valid room database
-        val roomImport = Room.databaseBuilder(
-          application,
-          AppDatabase::class.java,
-//          importDbFile.path
-          "tmp.db"
-        )
-          .createFromFile(importDbFile)
-
-          .build()
-        logd("before import")
-        val list = roomImport.mylistDao().getAll().first()
-        logd("after import")
-
-//        logd("before PRAGMA integrity_check")
-//        val cursor = roomImport.openHelper.writableDatabase.query("PRAGMA integrity_check")
-//        if (cursor.moveToFirst()) {
-//          val result = cursor.getString(0)
-//          logd("result $result")
-//          if (result != "ok") {
-//            // Handle corruption (e.g., delete and recreate)
-//            logd("import not ok")
-//          } else {
-//            logd("import ok")
-//          }
-//        }
-//        cursor.close()
-//
-//        logd("after PRAGMA integrity_check")
-
-//        logd("roomImport $roomImport")
-        db.close()
-        importDbFile.copyTo(application.getDatabasePath(DB_FILENAME), overwrite = true)
-        triggerRestart(activity)
-      } catch (e: Exception) {
-        Log.e("BackupViewModel", "$e")
       }
+    return {
+      val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
+        type = "*/*"
+        addCategory(Intent.CATEGORY_OPENABLE)
+      }
+      launcher.launch(intent)
     }
   }
+
+  private fun import(importDbUri: Uri) {
+    // delete import db
+    application.deleteDatabase(IMPORT_DB_FILENAME)
+    // copy uri to tmp file
+    val importFile = copyFromUriToTmpFile(importDbUri) ?: return
+    // import data
+    readImportDbAndOverwriteDb(importFile)
+  }
+
+  private fun copyFromUriToTmpFile(importDbUri: Uri): File? {
+    val inputStream = application.contentResolver.openInputStream(importDbUri)
+    var tmpFile: File? = null
+    try {
+      tmpFile = File.createTempFile("tmp", "db")
+      inputStream?.use { input ->
+        tmpFile?.outputStream()?.use { output ->
+          input.copyTo(output)
+        }
+      }
+    } catch (e: Exception) {
+      Log.e("BackupViewModel", "$e")
+    }
+    return tmpFile
+  }
+
+  private fun readImportDbAndOverwriteDb(importDb: File) {
+    viewModelScope.launch(IO) {
+      val roomImport = Room.databaseBuilder(
+        application,
+        AppDatabase::class.java,
+        IMPORT_DB_FILENAME
+      )
+        .createFromFile(importDb)
+        .build()
+      val mylists = roomImport.mylistDao().getAll().first()
+      logd("mylists $mylists")
+      val myitems = roomImport.myitemDao().getAll().first()
+      logd("myitems $myitems")
+
+      // room will not throw errors if import DB is invalid or corrupt
+      // room will only log an error
+      // only overwrite current DB data if mylists from import isNotEmpty
+      if (mylists.isNotEmpty()) {
+        // delete all data in db
+        db.myitemDao().deleteAll()
+        db.mylistDao().deleteAll()
+
+        // insert import db data into mylists.db
+        db.mylistDao().insertAll(*mylists.toTypedArray())
+        db.myitemDao().insertAll(*myitems.toTypedArray())
+      }
+      // delete tmp file
+      importDb.delete()
+    }
+  }
+
 }

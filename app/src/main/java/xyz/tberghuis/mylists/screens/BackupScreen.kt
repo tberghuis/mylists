@@ -55,26 +55,8 @@ fun ImportAlertDialog(
 ) {
   val activity = LocalActivity.current
   val close = { vm.importDialog = false }
-  val launcher =
-    rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-      logd("rememberLauncherForActivityResult $result")
-      logd("launcher result ${result.resultCode}")
-      when (result.resultCode) {
-        RESULT_OK -> {
-          logd("result.data ${result.data}")
-          logd("result.data.data ${result.data?.data}")
-          result.data?.data?.let { vm.import(activity!!, it) }
-        }
-      }
-    }
 
-  fun import() {
-    val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-      type = "*/*"
-      addCategory(Intent.CATEGORY_OPENABLE)
-    }
-    launcher.launch(intent)
-  }
+  val import = vm.onClickImportHandler()
 
   if (vm.importDialog) {
     AlertDialog(
