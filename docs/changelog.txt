@@ -1,2 +1,5 @@
+v1.5.0    2026-05-17  002-backup-filepicker
+  replaced ssh DB backup/import with file picker
+
 v1.4.0    2026-05-13  001-update-compose
   fix bug edit text fields on backup settings screen
