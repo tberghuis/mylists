@@ -19,6 +19,9 @@ import org.koin.androidx.compose.koinViewModel
 fun BackupScreen(
   vm: BackupViewModel = koinViewModel(),
 ) {
+
+  val getImportUri = vm.getImportDbFromFilePicker()
+
   Scaffold(topBar = {
     TopAppBar(
       // TODO back/up home arrow
@@ -35,6 +38,9 @@ fun BackupScreen(
         Button(onClick = { vm.deleteImportDb() }) {
           Text("delete import db")
         }
+      }
+      Button(onClick = getImportUri) {
+        Text("get import uri")
       }
     }
   }
