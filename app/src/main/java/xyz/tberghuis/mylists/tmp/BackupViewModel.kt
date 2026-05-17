@@ -4,6 +4,7 @@ import android.app.Activity.RESULT_OK
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -24,18 +25,16 @@ class BackupViewModel(
 ) : ViewModel() {
 
 
-  var importDbUri: Uri? = null
-  var importDbFile: File? = null
+//  var importDbUri: Uri? = null
+//  var importDbFile: File? = null
 
-  fun deleteImportDb() {
-    logd("deleteImportDb")
-//    application.deleteDatabase("import-mylists.db")
-//    application.deleteDatabase("tmp.db")
-    application.deleteDatabase(IMPORT_DB_FILENAME)
-  }
+//  fun deleteImportDb() {
+//    logd("deleteImportDb")
+//    application.deleteDatabase(IMPORT_DB_FILENAME)
+//  }
 
   @Composable
-  fun getImportDbFromFilePicker(): () -> Unit {
+  fun launchImport(): () -> Unit {
     val launcher =
       rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         logd("rememberLauncherForActivityResult $result")
@@ -44,7 +43,10 @@ class BackupViewModel(
           RESULT_OK -> {
             logd("result.data ${result.data}")
             logd("result.data.data ${result.data?.data}")
-            result.data?.data?.let { importDbUri = it }
+            result.data?.data?.let {
+//              importDbUri = it
+              import(it)
+            }
           }
         }
       }
@@ -57,35 +59,35 @@ class BackupViewModel(
     }
   }
 
-  fun copyFromUriToTmpFile() {
-    val inputStream = application.contentResolver.openInputStream(importDbUri!!)
-    importDbFile = File.createTempFile("tmp", "db")
-    inputStream?.use { input ->
-      importDbFile?.outputStream()?.use { output ->
-        input.copyTo(output)
+  private fun copyFromUriToTmpFile(importDbUri: Uri): File? {
+    val inputStream = application.contentResolver.openInputStream(importDbUri)
+    var tmpFile: File? = null
+    try {
+      tmpFile = File.createTempFile("tmp", "db")
+      inputStream?.use { input ->
+        tmpFile?.outputStream()?.use { output ->
+          input.copyTo(output)
+        }
       }
+    } catch (e: Exception) {
+      Log.e("BackupViewModel", "$e")
     }
+    return tmpFile
   }
 
 
-  fun readImportDbData() {
-
+  private fun readImportDbDataAndOverwriteDb(importDb: File) {
     viewModelScope.launch(IO) {
       val roomImport = Room.databaseBuilder(
         application,
         AppDatabase::class.java,
         IMPORT_DB_FILENAME
       )
-        .createFromFile(importDbFile!!)
+        .createFromFile(importDb)
         .build()
-
-
       val mylists = roomImport.mylistDao().getAll().first()
-
       logd("mylists $mylists")
-
       val myitems = roomImport.myitemDao().getAll().first()
-
       logd("myitems $myitems")
 
       if (mylists.isNotEmpty()) {
@@ -98,5 +100,14 @@ class BackupViewModel(
         db.myitemDao().insertAll(*myitems.toTypedArray())
       }
     }
+  }
+
+  private fun import(importDbUri: Uri) {
+    // delete import db
+    application.deleteDatabase(IMPORT_DB_FILENAME)
+    // copy uri to tmp file
+    val importFile = copyFromUriToTmpFile(importDbUri) ?: return
+    // read import data
+    readImportDbDataAndOverwriteDb(importFile)
   }
 }

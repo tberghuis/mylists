@@ -20,7 +20,7 @@ fun BackupScreen(
   vm: BackupViewModel = koinViewModel(),
 ) {
 
-  val getImportUri = vm.getImportDbFromFilePicker()
+  val launchImportHandler = vm.launchImport()
 
   Scaffold(topBar = {
     TopAppBar(
@@ -34,22 +34,11 @@ fun BackupScreen(
         .padding(10.dp),
       verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-      Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        Button(onClick = { vm.deleteImportDb() }) {
-          Text("delete import db")
-        }
-      }
-      Button(onClick = getImportUri) {
-        Text("get import uri")
+
+      Button(onClick = launchImportHandler) {
+        Text("import")
       }
 
-      Button(onClick = { vm.copyFromUriToTmpFile() }) {
-        Text("copy uri to tmp file")
-      }
-
-      Button(onClick = { vm.readImportDbData() }) {
-        Text("read import db data")
-      }
     }
   }
 }
