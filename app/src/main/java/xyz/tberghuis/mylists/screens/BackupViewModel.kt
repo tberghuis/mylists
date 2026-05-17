@@ -23,7 +23,7 @@ import xyz.tberghuis.mylists.data.Mylist
 import xyz.tberghuis.mylists.service.triggerRestart
 import xyz.tberghuis.mylists.util.logd
 
-class BackupViewModel(
+class XxxBackupViewModel(
   private val application: Application,
   private val db: AppDatabase,
 ) : ViewModel() {

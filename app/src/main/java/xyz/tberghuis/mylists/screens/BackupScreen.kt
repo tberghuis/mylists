@@ -25,8 +25,8 @@ import xyz.tberghuis.mylists.util.logd
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BackupScreen(
-  viewModel: BackupViewModel = koinViewModel(),
+fun XxxBackupScreen(
+  viewModel: XxxBackupViewModel = koinViewModel(),
 ) {
   Scaffold(topBar = {
     TopAppBar(
@@ -51,7 +51,7 @@ fun BackupScreen(
 
 @Composable
 fun ImportAlertDialog(
-  vm: BackupViewModel = koinViewModel(),
+  vm: XxxBackupViewModel = koinViewModel(),
 ) {
   val activity = LocalActivity.current
   val close = { vm.importDialog = false }
