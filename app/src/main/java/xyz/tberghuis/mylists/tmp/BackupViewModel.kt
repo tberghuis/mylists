@@ -79,6 +79,9 @@ class BackupViewModel(
       val myitems = roomImport.myitemDao().getAll().first()
       logd("myitems $myitems")
 
+      // room will not throw errors if import DB is invalid or corrupt
+      // room will only log an error
+      // only overwrite current DB data if mylists from import isNotEmpty
       if (mylists.isNotEmpty()) {
         // delete all data in db
         db.myitemDao().deleteAll()
