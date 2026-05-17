@@ -8,8 +8,12 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import java.io.File
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import xyz.tberghuis.mylists.IMPORT_DB_FILENAME
 import xyz.tberghuis.mylists.data.AppDatabase
 import xyz.tberghuis.mylists.util.logd
@@ -66,17 +70,20 @@ class BackupViewModel(
 
   fun readImportDbData() {
 
-//    val roomImport = Room.databaseBuilder(
-//      application,
-//      AppDatabase::class.java,
-//      IMPORT_DB_FILENAME
-//    )
-//      .createFromFile(importDbUri?.pa)
-//
-//      .build()
+    viewModelScope.launch(IO) {
+      val roomImport = Room.databaseBuilder(
+        application,
+        AppDatabase::class.java,
+        IMPORT_DB_FILENAME
+      )
+        .createFromFile(importDbFile!!)
+        .build()
 
 
+      val list = roomImport.mylistDao().getAll().first()
+
+      logd("list $list")
+
+    }
   }
-
-
 }
