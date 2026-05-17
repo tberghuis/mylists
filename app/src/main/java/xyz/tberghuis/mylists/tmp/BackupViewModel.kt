@@ -24,15 +24,6 @@ class BackupViewModel(
   private val db: AppDatabase,
 ) : ViewModel() {
 
-
-//  var importDbUri: Uri? = null
-//  var importDbFile: File? = null
-
-//  fun deleteImportDb() {
-//    logd("deleteImportDb")
-//    application.deleteDatabase(IMPORT_DB_FILENAME)
-//  }
-
   @Composable
   fun launchImport(): () -> Unit {
     val launcher =
@@ -44,7 +35,6 @@ class BackupViewModel(
             logd("result.data ${result.data}")
             logd("result.data.data ${result.data?.data}")
             result.data?.data?.let {
-//              importDbUri = it
               import(it)
             }
           }
@@ -75,8 +65,7 @@ class BackupViewModel(
     return tmpFile
   }
 
-
-  private fun readImportDbDataAndOverwriteDb(importDb: File) {
+  private fun readImportDbAndOverwriteDb(importDb: File) {
     viewModelScope.launch(IO) {
       val roomImport = Room.databaseBuilder(
         application,
@@ -108,6 +97,6 @@ class BackupViewModel(
     // copy uri to tmp file
     val importFile = copyFromUriToTmpFile(importDbUri) ?: return
     // read import data
-    readImportDbDataAndOverwriteDb(importFile)
+    readImportDbAndOverwriteDb(importFile)
   }
 }
