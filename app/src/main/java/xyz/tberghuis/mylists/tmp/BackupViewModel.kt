@@ -91,6 +91,8 @@ class BackupViewModel(
         db.mylistDao().insertAll(*mylists.toTypedArray())
         db.myitemDao().insertAll(*myitems.toTypedArray())
       }
+      // delete tmp file
+      importDb.delete()
     }
   }
 
@@ -99,7 +101,7 @@ class BackupViewModel(
     application.deleteDatabase(IMPORT_DB_FILENAME)
     // copy uri to tmp file
     val importFile = copyFromUriToTmpFile(importDbUri) ?: return
-    // read import data
+    // import data
     readImportDbAndOverwriteDb(importFile)
   }
 }
