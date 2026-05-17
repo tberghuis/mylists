@@ -25,7 +25,7 @@ class BackupViewModel(
 ) : ViewModel() {
 
   @Composable
-  fun launchImport(): () -> Unit {
+  fun onClickImportHandler(): () -> Unit {
     val launcher =
       rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         logd("rememberLauncherForActivityResult $result")

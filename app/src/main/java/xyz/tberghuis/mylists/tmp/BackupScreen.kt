@@ -19,7 +19,7 @@ fun BackupScreen(
   vm: BackupViewModel = koinViewModel(),
 ) {
 
-  val launchImportHandler = vm.launchImport()
+  val import = vm.onClickImportHandler()
 
   Scaffold(topBar = {
     TopAppBar(
@@ -34,7 +34,7 @@ fun BackupScreen(
       verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
 
-      Button(onClick = launchImportHandler) {
+      Button(onClick = import) {
         Text("import")
       }
 
