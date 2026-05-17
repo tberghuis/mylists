@@ -73,7 +73,7 @@ dependencies {
   implementation(libs.androidx.dataStore.preferences)
 
 
-  implementation(files("libs/jsch-0.1.55.jar"))
+//  implementation(files("libs/jsch-0.1.55.jar"))
   implementation(libs.androidx.compose.runtime.livedata)
 
   implementation("org.burnoutcrew.composereorderable:reorderable:0.7.4")
