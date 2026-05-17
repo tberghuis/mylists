@@ -26,7 +26,7 @@ import xyz.tberghuis.mylists.util.logd
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BackupScreen(
-  viewModel: BackupViewModel = koinViewModel(),
+  vm: BackupViewModel = koinViewModel(),
 ) {
   Scaffold(topBar = {
     TopAppBar(
@@ -41,7 +41,7 @@ fun BackupScreen(
       verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
       Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        Button(onClick = {}) {
+        Button(onClick = { vm.deleteImportDb() }) {
           Text("delete import db")
         }
       }
