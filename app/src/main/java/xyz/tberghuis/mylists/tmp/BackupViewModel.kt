@@ -8,6 +8,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
+import androidx.room.Room
+import java.io.File
 import xyz.tberghuis.mylists.IMPORT_DB_FILENAME
 import xyz.tberghuis.mylists.data.AppDatabase
 import xyz.tberghuis.mylists.util.logd
@@ -19,6 +21,7 @@ class BackupViewModel(
 
 
   var importDbUri: Uri? = null
+  var importDbFile: File? = null
 
   fun deleteImportDb() {
     logd("deleteImportDb")
@@ -48,6 +51,31 @@ class BackupViewModel(
       }
       launcher.launch(intent)
     }
+  }
+
+  fun copyFromUriToTmpFile() {
+    val inputStream = application.contentResolver.openInputStream(importDbUri!!)
+    importDbFile = File.createTempFile("tmp", "db")
+    inputStream?.use { input ->
+      importDbFile?.outputStream()?.use { output ->
+        input.copyTo(output)
+      }
+    }
+  }
+
+
+  fun readImportDbData() {
+
+//    val roomImport = Room.databaseBuilder(
+//      application,
+//      AppDatabase::class.java,
+//      IMPORT_DB_FILENAME
+//    )
+//      .createFromFile(importDbUri?.pa)
+//
+//      .build()
+
+
   }
 
 

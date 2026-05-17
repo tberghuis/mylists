@@ -42,6 +42,10 @@ fun BackupScreen(
       Button(onClick = getImportUri) {
         Text("get import uri")
       }
+
+      Button(onClick = { vm.copyFromUriToTmpFile() }) {
+        Text("copy uri to tmp file")
+      }
     }
   }
 }
