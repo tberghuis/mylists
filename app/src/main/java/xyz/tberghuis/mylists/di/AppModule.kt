@@ -3,7 +3,6 @@ package xyz.tberghuis.mylists.di
 import org.koin.core.module.dsl.singleOf
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
-import xyz.tberghuis.mylists.data.BackupSettingsRepository
 import xyz.tberghuis.mylists.screens.AddListViewModel
 import xyz.tberghuis.mylists.screens.BackupViewModel
 import xyz.tberghuis.mylists.screens.HomeViewModel
@@ -13,14 +12,12 @@ val appModule = module {
   singleOf(::provideDataBase) // AppDatabase
   singleOf(::provideMyitemDao) // MyitemDao
   singleOf(::provideMylistDao) // MylistDao
-  singleOf(::provideDatastore) // DataStore<Preferences> 
+  
+  // datastore was used for backup server ssh settings
+//  singleOf(::provideDatastore) // DataStore<Preferences> 
 
   viewModelOf(::HomeViewModel)
-
   viewModelOf(::AddListViewModel)
-
-  singleOf(::BackupSettingsRepository) // DataStore<Preferences> 
   viewModelOf(::BackupViewModel)
-
   viewModelOf(::ListViewModel)
 }
