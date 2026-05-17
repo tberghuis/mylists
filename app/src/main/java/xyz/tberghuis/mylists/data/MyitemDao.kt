@@ -11,6 +11,9 @@ interface MyitemDao {
 //  @Query("SELECT * FROM myitem WHERE mylist_id = :mylistId ORDER BY myitem_id DESC")
 //  fun getAll(mylistId: Int): Flow<List<Myitem>>
 
+  @Query("SELECT * FROM myitem")
+  fun getAll(): Flow<List<Myitem>>
+
   @Insert
   suspend fun insertAll(vararg myitem: Myitem)
 
