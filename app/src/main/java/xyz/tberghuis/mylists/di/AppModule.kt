@@ -10,7 +10,6 @@ import xyz.tberghuis.mylists.screens.ListViewModel
 import xyz.tberghuis.mylists.screens.XxxBackupViewModel
 import xyz.tberghuis.mylists.service.BackupService
 import xyz.tberghuis.mylists.service.ImportBackupService
-import xyz.tberghuis.mylists.tmp.BackupViewModel
 
 val appModule = module {
   singleOf(::provideDataBase) // AppDatabase
