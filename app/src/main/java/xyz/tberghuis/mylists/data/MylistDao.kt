@@ -38,5 +38,8 @@ interface MylistDao {
   // rewrite so param is entity... mey
   @Query("DELETE FROM mylist WHERE mylist_id = :mylistId")
   suspend fun delete(mylistId: Int)
+
+  @Query("DELETE FROM mylist")
+  suspend fun deleteAll()
 }
 

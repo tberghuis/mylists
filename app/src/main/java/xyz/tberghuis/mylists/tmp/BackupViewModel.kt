@@ -87,15 +87,16 @@ class BackupViewModel(
       val myitems = roomImport.myitemDao().getAll().first()
 
       logd("myitems $myitems")
-      
-      if(mylists.isNotEmpty()){
-        // delete all data in db
-//        db.myitemDao().deleteAll
-        
-        // insert import db data into mylists.db
-      }
-      
 
+      if (mylists.isNotEmpty()) {
+        // delete all data in db
+        db.myitemDao().deleteAll()
+        db.mylistDao().deleteAll()
+
+        // insert import db data into mylists.db
+        db.mylistDao().insertAll(*mylists.toTypedArray())
+        db.myitemDao().insertAll(*myitems.toTypedArray())
+      }
     }
   }
 }
