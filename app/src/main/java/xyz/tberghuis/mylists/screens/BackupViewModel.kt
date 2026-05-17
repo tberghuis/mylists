@@ -23,7 +23,7 @@ import androidx.room.Room
 import java.io.File
 import xyz.tberghuis.mylists.data.AppDatabase
 
-class XxxBackupViewModel(
+class BackupViewModel(
   private val application: Application,
   private val db: AppDatabase,
 ) : ViewModel() {

@@ -159,7 +159,6 @@ fun DraftTextEntry(
         label = { Text("List Item") },
         singleLine = true,
         keyboardActions = KeyboardActions(onDone = {
-          // Log.d("xxx", "on done")
           addListItem()
         }),
         modifier = Modifier

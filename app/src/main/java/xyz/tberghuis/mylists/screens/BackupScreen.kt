@@ -19,7 +19,7 @@ import xyz.tberghuis.mylists.components.ImportButton
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun XxxBackupScreen() {
+fun BackupScreen() {
   Scaffold(topBar = {
     TopAppBar(
       // TODO back/up home arrow
@@ -43,7 +43,7 @@ fun XxxBackupScreen() {
 
 @Composable
 fun ImportAlertDialog(
-  vm: XxxBackupViewModel = koinViewModel(),
+  vm: BackupViewModel = koinViewModel(),
 ) {
   val close = { vm.importDialog = false }
   val import = vm.onClickImportHandler()
