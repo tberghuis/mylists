@@ -25,8 +25,8 @@ val appModule = module {
   singleOf(::BackupSettingsRepository) // DataStore<Preferences> 
   singleOf(::ImportBackupService) // DataStore<Preferences> 
   singleOf(::BackupService) // DataStore<Preferences> 
-//  viewModelOf(::XxxBackupViewModel)
-  viewModelOf(::BackupViewModel)
+  viewModelOf(::XxxBackupViewModel)
+//  viewModelOf(::BackupViewModel)
 
   viewModelOf(::ListViewModel)
 }
