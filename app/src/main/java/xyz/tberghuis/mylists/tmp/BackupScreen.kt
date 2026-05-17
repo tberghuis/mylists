@@ -41,67 +41,11 @@ fun BackupScreen(
       verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
       Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-        BackupButton()
-        ImportButton()
-      }
-    }
-  }
-  ImportAlertDialog()
-}
-
-@Composable
-fun ImportAlertDialog(
-  vm: BackupViewModel = koinViewModel(),
-) {
-  val activity = LocalActivity.current
-  val close = { vm.importDialog = false }
-  val launcher =
-    rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-      logd("rememberLauncherForActivityResult $result")
-      logd("launcher result ${result.resultCode}")
-      when (result.resultCode) {
-        RESULT_OK -> {
-          logd("result.data ${result.data}")
-          logd("result.data.data ${result.data?.data}")
-          result.data?.data?.let { vm.import(activity!!, it) }
+        Button(onClick = {}) {
+          Text("delete import db")
         }
       }
     }
-
-  fun import() {
-    val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-      type = "*/*"
-      addCategory(Intent.CATEGORY_OPENABLE)
-    }
-    launcher.launch(intent)
-  }
-
-  if (vm.importDialog) {
-    AlertDialog(
-      onDismissRequest = close,
-      title = {
-        Text(text = "Warning")
-      },
-      text = {
-        Text("Importing will delete all your current lists")
-      },
-      confirmButton = {
-        Button(
-          onClick = {
-            close()
-            import()
-          }
-        ) {
-          Text("Confirm")
-        }
-      },
-      dismissButton = {
-        Button(
-          onClick = close
-        ) {
-          Text("Cancel")
-        }
-      }
-    )
   }
 }
+

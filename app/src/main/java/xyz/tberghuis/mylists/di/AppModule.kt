@@ -10,6 +10,7 @@ import xyz.tberghuis.mylists.screens.ListViewModel
 import xyz.tberghuis.mylists.screens.XxxBackupViewModel
 import xyz.tberghuis.mylists.service.BackupService
 import xyz.tberghuis.mylists.service.ImportBackupService
+import xyz.tberghuis.mylists.tmp.BackupViewModel
 
 val appModule = module {
   singleOf(::provideDataBase) // AppDatabase
@@ -24,7 +25,8 @@ val appModule = module {
   singleOf(::BackupSettingsRepository) // DataStore<Preferences> 
   singleOf(::ImportBackupService) // DataStore<Preferences> 
   singleOf(::BackupService) // DataStore<Preferences> 
-  viewModelOf(::XxxBackupViewModel)
+//  viewModelOf(::XxxBackupViewModel)
+  viewModelOf(::BackupViewModel)
 
   viewModelOf(::ListViewModel)
 }
